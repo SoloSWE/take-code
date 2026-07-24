@@ -88,7 +88,7 @@ export const PublicProfile = () => {
 								{user?.about || 'No description'}
 							</p>
 							<div>
-								<ul className='flex items-center gap-3 flex-wrap'>
+								<ul className='flex items-center gap-3 flex-wrap mt-4'>
 									{user?.social_medias === null ? (
 										<span className='text-[#94a3b8] text-lg'>
 											No social media

@@ -52,7 +52,7 @@ export const AuntatificatedUserMenu = ({ user }: User) => {
 			</button>
 			<div
 				className={cn(
-					'bg-[#090f22] border border-[#22293d] rounded-2xl absolute mt-2 w-full h-auto transition-all ease-in-out duration-300',
+					'bg-[#090f22] border border-[#22293d] rounded-xl absolute mt-2 w-full h-auto transition-all ease-in-out duration-300',
 					active ? 'opacity-100 visible' : 'opacity-0 invisible',
 				)}
 			>
