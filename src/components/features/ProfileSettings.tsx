@@ -41,7 +41,7 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 					// Тянем данные из таблицы profiles именно для этого юзера
 					const { data, error } = await supabase
 						.from('profiles')
-						.select('display_name, tag, speciality, about, social_medias')
+						.select('display_name, avatar_url, tag, speciality, about, social_medias')
 						.eq('id', user.id)
 						.single();
 
@@ -52,6 +52,7 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 						setTag(data.tag || '');
 						setSpeciality(data.speciality || '');
 						setAbout(data.about || '');
+						setAvatarUrl(data.avatar_url || '');
 
 						if (Array.isArray(data.social_medias)) {
 							const socialsObject: SelectedSocials = {};
@@ -102,27 +103,68 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 	};
 
 	const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files || e.target.files.length === 0) return;
-		const file = e.target.files[0];
-		const fileExt = file.name.split('.').pop();
-		const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+		try {
+			if (!e.target.files || e.target.files.length === 0) return;
+			const file = e.target.files[0];
 
-		// 1. Загружаем в бакет Supabase
-		const { error: uploadError } = await supabase.storage
-			.from('avatars')
-			.upload(filePath, file, { upsert: true });
+			// 1. Получаем текущего авторизованного юзера напрямую из auth
+			const { data: authData, error: authError } =
+				await supabase.auth.getUser();
 
-		if (uploadError) return console.error(uploadError);
+			if (authError || !authData.user) {
+				alert('Сессия истекла. Пожалуйста, войдите снова.');
+				return;
+			}
 
-		// 2. Получаем публичную ссылку
-		const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+			const userId = authData.user.id;
+			const fileExt = file.name.split('.').pop();
 
-		// 3. Сохраняем URL в стейт и обновляем таблицу profiles
-		setAvatarUrl(data.publicUrl);
-		await supabase
-			.from('profiles')
-			.update({ avatar_url: data.publicUrl })
-			.eq('id', user?.id);
+			// Формируем чистый путь: ID_пользователя/timestamp.ext
+			const filePath = `${userId}/${Date.now()}.${fileExt}`;
+
+			console.log('Начинаем загрузку файла:', filePath);
+
+			// 2. Загружаем файл в Storage
+			const { error: uploadError } = await supabase.storage
+				.from('avatars')
+				.upload(filePath, file, {
+					upsert: true,
+					contentType: file.type,
+				});
+
+			if (uploadError) {
+				console.error(
+					'❌ Ошибка Supabase Storage при загрузке:',
+					uploadError.message,
+				);
+				alert(`Не удалось загрузить фото: ${uploadError.message}`);
+				return;
+			}
+
+			// 3. Получаем публичную ссылку
+			const { data: urlData } = supabase.storage
+				.from('avatars')
+				.getPublicUrl(filePath);
+
+			const publicUrl = urlData.publicUrl;
+			console.log('✅ Успешно сгенерирован URL:', publicUrl);
+
+			// 4. Обновляем профиль в БД
+			const { error: updateError } = await supabase
+				.from('profiles')
+				.update({ avatar_url: publicUrl })
+				.eq('id', userId);
+
+			if (updateError) {
+				console.error('❌ Ошибка обновления profiles:', updateError.message);
+				return;
+			}
+
+			// 5. Обновляем локальное состояние UI
+			setAvatarUrl(publicUrl);
+		} catch (err) {
+			console.error('🔥 Непредвиденная ошибка:', err);
+		}
 	};
 	
 	const handleToggleSocial = (name: string) => {
