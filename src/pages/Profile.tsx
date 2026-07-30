@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 
-import { supabase } from '../utils/supabase';
 import type { User } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabase';
 
 import { ProfileAbout } from '../components/features/ProfileAbout';
-import { ProfileMySetup } from '../components/features/ProfileMySetup';
 import { ProfileSettings } from '../components/features/ProfileSettings';
 
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
-import { ProfileMySetupLoader } from '../components/ui/Loaders/ProfileMySetupLoader';
 
 import { Bookmark, Code2, FolderClosed } from 'lucide-react';
+import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
+import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 
 export interface SocialMedia {
 	id: number;
@@ -88,7 +88,7 @@ export const Profile = () => {
 					)}
 				</div>
 				<div className='w-1/2 h-auto bg-[#080e1d] border border-[#19202f] rounded-4xl px-8 py-8 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
-					{loading ? <ProfileMySetupLoader /> : <ProfileMySetup />}
+					{loading ? <ProfileFeaturedSnippetsLoader /> : <ProfileFeaturedSnippets />}
 				</div>
 			</div>
 			<div className='bg-[#090f22] border border-[#20273b] mt-8 rounded-3xl px-3 py-3'>

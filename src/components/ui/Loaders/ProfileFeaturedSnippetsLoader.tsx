@@ -1,4 +1,4 @@
-export const ProfileMySetupLoader = () => {
+export const ProfileFeaturedSnippetsLoader = () => {
 	return (
 		<>
 			<div className='flex gap-4'>
