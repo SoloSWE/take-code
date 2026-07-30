@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { Star, TrendingUp } from "lucide-react";
 
 export const ProfileFeaturedSnippets = () => {
 	return (
@@ -10,6 +10,21 @@ export const ProfileFeaturedSnippets = () => {
 				</div>
 				<h2 className='text-3xl text-white font-semibold'>Featured Snippets</h2>
 			</div>
+			<ul className='mt-5'>
+				<li className='w-full h-full bg-[#0b1220] border border-[#242c3b] rounded-2xl px-5 py-5 flex items-center justify-between'>
+					<h3 className='text-white font-bold text-xl'>Snippet Name</h3>
+					<div className='flex items-center justify-between'>
+						<div className='flex items-center gap-1.5 text-[#cbd5e1] font-semibold'>
+							<span>count</span>
+							<Star
+								className={'text-[#e3d07f] fill-[#e3d07f]'
+								}
+								size={20}
+							/>
+						</div>
+					</div>
+				</li>
+			</ul>
 		</div>
 	);
 };
