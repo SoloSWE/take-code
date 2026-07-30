@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { Check, Copy, CornerDownRight, MessageSquareCode, Star, Trash2, X } from 'lucide-react';
 
@@ -59,6 +59,7 @@ interface commentT {
 
 export const Snippet = () => {
 	const { id } = useParams<{ id: string }>();
+	const location = useLocation();
 
 	const [snippet, setSnippet] = useState<snippetCard | null>(null);
 	const [comments, setComments] = useState<commentT[]>([]);
@@ -73,6 +74,10 @@ export const Snippet = () => {
 	const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
 	const [commentText, setCommentText] = useState<string>('');
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [location.pathname])
 
 	useEffect(() => {
 		supabase.auth.getUser().then(({ data }) => {
