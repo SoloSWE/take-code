@@ -228,11 +228,21 @@ export const Snippet = () => {
 		}
 	};
 
-	const copyCode = (code: string) => {
+	const copyCode = async (code: string, snippetId: string) => {
 		navigator.clipboard.writeText(code ?? '').then(() => {
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
 		});
+
+		const { data, error } = await supabase.rpc('increment_copied', {
+			row_id: snippetId,
+		});
+
+		if (error) {
+			console.error('Ошибка RPC increment_copied:', error);
+		} else {
+			console.log('Новое значение copied_count из БД:', data);
+		}
 	};
 
 	const copyDependencieFunc = (dependencieID: string) => {
@@ -427,7 +437,7 @@ export const Snippet = () => {
 										<span>{snippet?.stars_count}</span>
 									</button>
 									<Button
-										onClick={() => copyCode(snippet?.code ?? '')}
+										onClick={() => copyCode(snippet?.code ?? '', snippet?.id ?? '')}
 										copiedStatus={copied}
 									/>
 								</div>

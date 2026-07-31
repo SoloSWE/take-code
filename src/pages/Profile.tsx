@@ -78,16 +78,17 @@ export const Profile = () => {
 	}, [user?.id]);
 
 	useEffect(() => {
+		// 🛑 Не делаем запрос, пока user еще не загрузился!
+		if (!user?.id) return;
+
 		async function fetchFeaturedSnippets() {
 			setLoading(true);
-
 			try {
 				const { data } = await supabase
 					.from('snippets')
-					.select('*, user_id')
+					.select('*, profiles(avatar_url, tag, username)')
 					.order('stars_count', { ascending: false })
 					.eq('user_id', user?.id)
-					.gt('stars_count', 1)
 					.limit(2);
 
 				setFeaturedSnippets(data);
@@ -99,7 +100,7 @@ export const Profile = () => {
 		}
 
 		fetchFeaturedSnippets();
-	}, [user?.id]);
+	}, [user?.id]); 
 
 	return (
 		<section className='w-full mx-auto py-6 px-10'>

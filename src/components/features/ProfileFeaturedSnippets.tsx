@@ -48,7 +48,7 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 															key={idx}
 															className='text-xs text-[#64748b] font-mono'
 														>
-															#{tag}
+															{tag}
 														</span>
 													))}
 												</div>
@@ -80,11 +80,6 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 									<div className='flex items-center justify-between pt-2.5 border-t border-[#131c2e] text-xs text-[#64748b]'>
 										{snippet.profiles ? (
 											<div className='flex items-center gap-2'>
-												<img
-													src={snippet.profiles.avatar_url}
-													alt={snippet.profiles.tag}
-													className='w-4 h-4 rounded-full object-cover border border-[#1e293b]'
-												/>
 												<span className='text-[#94a3b8] font-medium group-hover:text-slate-300 transition-colors'>
 													@{snippet.profiles.tag}
 												</span>

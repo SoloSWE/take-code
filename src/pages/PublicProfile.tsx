@@ -31,11 +31,13 @@ interface UserProfile {
 
 export const PublicProfile = () => {
 	const { id } = useParams<{ id: string }>();
-	const [loading, setLoading] = useState<boolean>(true);
+
 	const [user, setUser] = useState<UserProfile | null>(null);
 	const [featuredSnippets, setFeaturedSnippets] = useState<
-		snippetCard[] | null
+	snippetCard[] | null
 	>([]);
+
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		if (id) {
@@ -65,10 +67,11 @@ export const PublicProfile = () => {
 		if (!user?.id) return;
 
 		async function fetchFeaturedSnippets() {
+			setLoading(true)
 			try {
 				const { data } = await supabase
 					.from('snippets')
-					.select('*, user_id')
+					.select('*, profiles(avatar_url, tag, username)')
 					.order('stars_count', { ascending: false })
 					.eq('user_id', user?.id)
 					.limit(2);
@@ -76,13 +79,14 @@ export const PublicProfile = () => {
 				setFeaturedSnippets(data);
 			} catch (error) {
 				console.log(error);
+			} finally {
+				setLoading(false);
 			}
 		}
 
 		fetchFeaturedSnippets();
 	}, [user?.id]); // 👈 Добавили зависимость!
 
-	console.log(user);
 	return (
 		<section className='w-full py-6 px-10'>
 			<div className='flex gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
