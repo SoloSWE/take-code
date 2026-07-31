@@ -12,6 +12,8 @@ import type { snippetCard } from '../components/features/Showcase';
 
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
+import { cn } from '../utils/cn';
+import { UserSnippetsList } from '../components/features/UserSnippetsList';
 
 
 export interface SocialMedia {
@@ -38,6 +40,8 @@ export const Profile = () => {
 	const [featuredSnippets, setFeaturedSnippets] = useState<snippetCard[] | null>(null);
 
 	const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+	const [selectedCategory, setSelectedCategory] =
+		useState<string>('My Snippets');
 
 	useEffect(() => {
 		supabase.auth.getSession().then(({ data: { session } }) => {
@@ -102,6 +106,10 @@ export const Profile = () => {
 		fetchFeaturedSnippets();
 	}, [user?.id]); 
 
+	const handleSelectedCategory = (category: string) => {
+		setSelectedCategory(category);
+	}
+
 	return (
 		<section className='w-full mx-auto py-6 px-10'>
 			<div className='flex gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
@@ -132,30 +140,52 @@ export const Profile = () => {
 				<div className='flex items-center justify-between'>
 					<div className='flex'>
 						<ul className='flex gap-3'>
-							<li className='flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer'>
+							<li
+								onClick={() => handleSelectedCategory('My Snippets')}
+								className={cn(
+									'flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer transition-colors',
+									selectedCategory === 'My Snippets' &&
+										'bg-[#252d3c] text-white',
+								)}
+							>
 								<Code2 size={20} />
 								My Snippets
 							</li>
-							<li className='flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer'>
-								<Bookmark size={20} />
-								Saved / Bookmarks
-							</li>
-							<li className='flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer'>
+							<li
+								onClick={() => handleSelectedCategory('Collections')}
+								className={cn(
+									'flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer',
+									selectedCategory === 'Collections' &&
+										'bg-[#252d3c] text-white',
+								)}
+							>
 								<FolderClosed size={20} />
 								Collections
 							</li>
+							<li
+								onClick={() => handleSelectedCategory('Saved / Bookmarks')}
+								className={cn(
+									'flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer',
+									selectedCategory === 'Saved / Bookmarks' &&
+										'bg-[#252d3c] text-white',
+								)}
+							>
+								<Bookmark size={20} />
+								Saved / Bookmarks
+							</li>
 						</ul>
 					</div>
-					<div>
-						<span className='text-[#64748b] font-mono text-[16px]'>
+					<div className='flex items-center gap-4'>
+						<p className='w-50 text-[#64748b] font-mono text-[16px]'>
 							128 published
-						</span>
+						</p>
+						<button className='w-full h-auto px-2 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>
+							New Snippets
+						</button>
 					</div>
 				</div>
 			</div>
-			<div className='flex items-center justify-center mt-25 text-2xl text-gray-400 mb-20'>
-				Сниппеты
-			</div>
+			<UserSnippetsList />
 
 			{isSettingsOpen && (
 				<ProfileSettings onClose={() => setIsSettingsOpen(false)} user={user} />

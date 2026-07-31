@@ -64,6 +64,7 @@ export interface snippetCard {
 		tag: string;
 		avatar_url: string;
 	} | null;
+	created_at: string | null;
 }
 
 export const Showcase = () => {

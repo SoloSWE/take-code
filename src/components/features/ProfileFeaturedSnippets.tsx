@@ -46,7 +46,7 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 													{snippet.tags.slice(0, 2).map((tag, idx) => (
 														<span
 															key={idx}
-															className='text-xs text-[#64748b] font-mono'
+															className='text-[#64748b] font-mono'
 														>
 															{tag}
 														</span>
@@ -55,7 +55,7 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 											)}
 										</div>
 
-										<div className='flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#0e1726] border border-[#172033] text-slate-200 transition-colors'>
+										<div className='flex items-center gap-1.5 text-sm font-semibold px-2.5 py-1 rounded-lg bg-[#0e1726] border border-[#172033] text-slate-200 transition-colors'>
 											<span>{snippet.stars_count}</span>
 											<Star
 												size={14}
@@ -66,11 +66,11 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 
 									{/* ЦЕНТР: Заголовок и Описание */}
 									<div className='mb-3'>
-										<h3 className='text-white font-bold text-base group-hover:text-[#2dd4bf] transition-colors line-clamp-1'>
+										<h3 className='text-white font-bold text-lg group-hover:text-[#2dd4bf] transition-colors line-clamp-1'>
 											{snippet.title}
 										</h3>
 										{snippet.description && (
-											<p className='text-[#94a3b8] text-xs mt-1 line-clamp-2 leading-relaxed font-normal'>
+											<p className='text-[#94a3b8] text-sm mt-1 line-clamp-2 leading-relaxed font-normal'>
 												{snippet.description}
 											</p>
 										)}
@@ -80,7 +80,7 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 									<div className='flex items-center justify-between pt-2.5 border-t border-[#131c2e] text-xs text-[#64748b]'>
 										{snippet.profiles ? (
 											<div className='flex items-center gap-2'>
-												<span className='text-[#94a3b8] font-medium group-hover:text-slate-300 transition-colors'>
+												<span className='text-[#94a3b8] text-sm font-medium group-hover:text-slate-300 transition-colors'>
 													@{snippet.profiles.tag}
 												</span>
 											</div>
@@ -88,7 +88,7 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 											<span className='text-[#64748b]'>TakeCode</span>
 										)}
 
-										<div className='flex items-center gap-1.5 text-[#64748b] group-hover:text-[#94a3b8] transition-colors'>
+										<div className='flex items-center gap-1.5 text-[#64748b] text-sm group-hover:text-[#94a3b8] transition-colors'>
 											<Copy size={13} />
 											<span>{snippet.copied_count || 0} copies</span>
 										</div>

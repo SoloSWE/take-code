@@ -182,7 +182,6 @@ export const ExploreHub = () => {
 						};
 					});
 
-					console.log(formattedData)
 					setSnippets(formattedData);
 				}
 			} catch (err) {
@@ -197,7 +196,7 @@ export const ExploreHub = () => {
 		selectedTag,
 		currentTag,
 		selectedFilter,
-		currentPage, // 👈 Перезапрашиваем данные при смене страницы!
+		currentPage,
 	]);
 
 	const getFilterText = () => {

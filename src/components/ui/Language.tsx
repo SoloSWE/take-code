@@ -1,9 +1,9 @@
 type languagesTProps = {
-	language: string;
+	language: string | undefined;
 	icon?: string;
-	background?: string;
-	color?: string;
-	borderColor?: string;
+	background?: string | null;
+	color?: string | null;
+	borderColor?: string | null;
 };
 
 export const Language = ({ language, icon, background, color, borderColor }: languagesTProps) => {
