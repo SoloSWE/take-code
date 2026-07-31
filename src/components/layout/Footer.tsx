@@ -25,21 +25,36 @@ export const Footer = () => {
 				<ul className='flex items-center gap-6 sm:gap-8 justify-center text-[16px] font-medium text-[#94A3B8] max-sm:text-sm'>
 					<Link to='/exploreHub'>
 						<li>
-							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/exploreHub' && 'text-white')}>
+							<span
+								className={cn(
+									'text-[#94A3B8] cursor-pointer transition-colors hover:text-white',
+									location.pathname === '/exploreHub' && 'text-white',
+								)}
+							>
 								Explore
 							</span>
 						</li>
 					</Link>
 					<Link to='/community'>
 						<li>
-							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/community' && 'text-white')}>
+							<span
+								className={cn(
+									'text-[#94A3B8] cursor-pointer transition-colors hover:text-white',
+									location.pathname === '/community' && 'text-white',
+								)}
+							>
 								Community
 							</span>
 						</li>
 					</Link>
 					<Link to='/guideLines'>
 						<li>
-							<span className='cursor-pointer transition-colors duration-200 hover:text-white select-none'>
+							<span
+								className={cn(
+									'text-[#94A3B8] cursor-pointer transition-colors hover:text-white',
+									location.pathname === '/guideLines' && 'text-white',
+								)}
+							>
 								Guidelines
 							</span>
 						</li>
