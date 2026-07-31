@@ -1,11 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { Braces } from 'lucide-react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInstagram, faTelegram, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { cn } from '../../utils/cn';
 
 export const Footer = () => {
+	const location = useLocation();
 	return (
 		<footer className='w-full border-t border-[#222b3e] bg-[#020617]/40 backdrop-blur-md px-4 sm:px-8 lg:px-16 py-8 md:py-12 flex flex-col items-center justify-center'>
 			<div className='w-full max-w-7xl flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-4'>
@@ -23,14 +25,14 @@ export const Footer = () => {
 				<ul className='flex items-center gap-6 sm:gap-8 justify-center text-[16px] font-medium text-[#94A3B8] max-sm:text-sm'>
 					<Link to='/exploreHub'>
 						<li>
-							<span className='cursor-pointer transition-colors duration-200 hover:text-white select-none'>
+							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/exploreHub' && 'text-white')}>
 								Explore
 							</span>
 						</li>
 					</Link>
 					<Link to='/community'>
 						<li>
-							<span className='cursor-pointer transition-colors duration-200 hover:text-white select-none'>
+							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/community' && 'text-white')}>
 								Community
 							</span>
 						</li>

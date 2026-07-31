@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { Braces, Search } from 'lucide-react';
 
@@ -10,8 +10,10 @@ import { Input } from '../ui/Input';
 
 import { AuntatificatedUserMenu } from '../features/AuntatificatedUserMenu';
 import type { UserProfile } from '../../pages/Profile';
+import { cn } from '../../utils/cn';
 
 export const Header = () => {
+	const location = useLocation()
 	const [user, setUser] = useState<User | null>(null);
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 	const [open, setOpened] = useState<boolean>(false);
@@ -90,14 +92,14 @@ export const Header = () => {
 				<ul className='flex items-center gap-4.5'>
 					<Link to='/exploreHub'>
 						<li>
-							<span className='text-[#94A3B8] cursor-pointer transition-colors hover:text-white'>
+							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/exploreHub' && 'text-white')}>
 								Explore
 							</span>
 						</li>
 					</Link>
 					<Link to='/community'>
 						<li>
-							<span className='text-[#94A3B8] cursor-pointer transition-colors hover:text-white'>
+							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/community' && 'text-white')}>
 								Community
 							</span>
 						</li>
