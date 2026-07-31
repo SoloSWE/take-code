@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/Home";
 import { Auth } from "./pages/Auth";
 import { Profile } from "./pages/Profile";
+import { CreateSnippet } from "./pages/CreateSnippet";
 import { PublicProfile } from "./pages/PublicProfile";
 import { ExploreHub } from "./pages/ExploreHub";
 import { Snippet } from "./pages/Snippet";
@@ -20,6 +21,7 @@ export const App = () => {
 				<Route path='/exploreHub' element={<ExploreHub />} />
 				<Route path='/snippet/:id' element={<Snippet />} />
 				<Route path='/user/:id' element={<PublicProfile />} />
+				<Route path='/createSnippet' element={<CreateSnippet />} />
 			</Route>
 		</Routes>
 	);

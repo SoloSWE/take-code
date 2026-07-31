@@ -14,6 +14,7 @@ import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader'
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 import { cn } from '../utils/cn';
 import { UserSnippetsList } from '../components/features/UserSnippetsList';
+import { Link } from 'react-router-dom';
 
 
 export interface SocialMedia {
@@ -179,12 +180,15 @@ export const Profile = () => {
 						<p className='w-50 text-[#64748b] font-mono text-[16px]'>
 							128 published
 						</p>
-						<button className='w-full h-auto px-2 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>
-							New Snippets
-						</button>
+						<Link to={'/createSnippet'}>
+							<button className='w-full h-auto px-2 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>
+								New Snippet
+							</button>
+						</Link>
 					</div>
 				</div>
 			</div>
+
 			<UserSnippetsList />
 
 			{isSettingsOpen && (
