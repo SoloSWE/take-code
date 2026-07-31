@@ -3,14 +3,16 @@ import { useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../utils/supabase';
 
+import { Bookmark, Code2, FolderClosed } from 'lucide-react';
+
 import { ProfileAbout } from '../components/features/ProfileAbout';
 import { ProfileSettings } from '../components/features/ProfileSettings';
+import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
+import type { snippetCard } from '../components/features/Showcase';
 
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
-
-import { Bookmark, Code2, FolderClosed } from 'lucide-react';
-import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
+
 
 export interface SocialMedia {
 	id: number;
@@ -33,6 +35,7 @@ export const Profile = () => {
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+	const [featuredSnippets, setFeaturedSnippets] = useState<snippetCard[] | null>(null);
 
 	const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
@@ -74,10 +77,35 @@ export const Profile = () => {
 		}
 	}, [user?.id]);
 
+	useEffect(() => {
+		async function fetchFeaturedSnippets() {
+			setLoading(true);
+
+			try {
+				const { data } = await supabase
+					.from('snippets')
+					.select('*, user_id')
+					.order('stars_count', { ascending: false })
+					.eq('user_id', user?.id)
+					.gt('stars_count', 1)
+					.limit(2);
+
+				setFeaturedSnippets(data);
+			} catch (error) {
+				console.log(error);
+			} finally {
+				setLoading(false);
+			}
+		}
+
+		fetchFeaturedSnippets();
+	}, [user?.id]);
+
 	return (
 		<section className='w-full mx-auto py-6 px-10'>
-			<div className='flex gap-4 w-full h-auto bg-[#0c1321] border border-[#252d3c] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
-				<div className='w-1/2 h-auto bg-[#080e1d] border border-[#19202f] rounded-3xl flex flex-col gap-5 px-8 py-9 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
+			<div className='flex gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
+				{/* 1. ЛЕВАЯ КОЛОНКА (Она задаёт естественную высоту всему контейнеру!) */}
+				<div className='w-1/2 bg-[#080e1d] border border-[#19202f] rounded-3xl flex flex-col gap-5 px-8 py-9 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
 					{loading ? (
 						<ProflieAboutLoader />
 					) : (
@@ -87,8 +115,16 @@ export const Profile = () => {
 						/>
 					)}
 				</div>
-				<div className='w-1/2 h-auto bg-[#080e1d] border border-[#19202f] rounded-4xl px-8 py-8 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
-					{loading ? <ProfileFeaturedSnippetsLoader /> : <ProfileFeaturedSnippets />}
+
+				{/* 2. ПРАВАЯ КОЛОНКА (Делаем relative, чтобы запереть правый блок внутри высоты левого) */}
+				<div className='w-1/2 relative max-[965px]:w-full max-[965px]:min-h-100'>
+					<div className='absolute inset-0 bg-[#080e1d] border border-[#19202f] rounded-4xl px-8 py-8 hover:border-[#252e44] hover:ring-[#252e44] overflow-hidden'>
+						{loading ? (
+							<ProfileFeaturedSnippetsLoader />
+						) : (
+							<ProfileFeaturedSnippets featuredSnippets={featuredSnippets} />
+						)}
+					</div>
 				</div>
 			</div>
 			<div className='bg-[#090f22] border border-[#20273b] mt-8 rounded-3xl px-3 py-3'>

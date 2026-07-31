@@ -88,15 +88,16 @@ export const ProfileAbout = ({ userProfile, onOpenSettings }: ProfileAboutProps)
 								socialIconsMap[social.name] || AzureEntraGlobalSecureAccess;
 
 							return (
-								<a
-									key={social.id || index}
-									href={social.link}
-									target='_blank'
-									className='flex items-center gap-2 text-[#CBD5E1] text-sm font-semibold bg-[#151a29] border border-[#2a3040] rounded-3xl px-4 py-2 cursor-pointer transition-colors hover:bg-[#1c2336] hover:text-white'
-								>
-									<IconComponent className='w-5 h-5 text-[#38BDF8]' />
-									<span>{social.name}</span>
-								</a>
+								<li key={social.id || index}>
+									<a
+										href={social.link}
+										target='_blank'
+										className='flex items-center gap-2 text-[#CBD5E1] text-sm font-semibold bg-[#151a29] border border-[#2a3040] rounded-3xl px-4 py-2 cursor-pointer transition-colors hover:bg-[#1c2336] hover:text-white'
+									>
+										<IconComponent className='w-5 h-5 text-[#38BDF8]' />
+										<span>{social.name}</span>
+									</a>
+								</li>
 							);
 						})
 					)}

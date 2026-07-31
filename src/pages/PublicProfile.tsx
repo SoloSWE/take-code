@@ -1,11 +1,15 @@
-import { AzureEntraGlobalSecureAccess } from '@thesvg/react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { supabase } from '../utils/supabase';
+import { socialIconsMap } from '../mocks/mockData';
+
+import { AzureEntraGlobalSecureAccess } from '@thesvg/react';
+
 import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
-import { socialIconsMap } from '../mocks/mockData';
-import { supabase } from '../utils/supabase';
+import type { snippetCard } from '../components/features/Showcase';
 
 interface SocialMedia {
 	id: number;
@@ -24,10 +28,14 @@ interface UserProfile {
 	social_medias: SocialMedia[];
 }
 
+
 export const PublicProfile = () => {
 	const { id } = useParams<{ id: string }>();
 	const [loading, setLoading] = useState<boolean>(true);
 	const [user, setUser] = useState<UserProfile | null>(null);
+	const [featuredSnippets, setFeaturedSnippets] = useState<
+		snippetCard[] | null
+	>([]);
 
 	useEffect(() => {
 		if (id) {
@@ -52,11 +60,34 @@ export const PublicProfile = () => {
 		}
 	}, [id]);
 
+	useEffect(() => {
+		// 🛑 Не делаем запрос, пока user еще не загрузился!
+		if (!user?.id) return;
+
+		async function fetchFeaturedSnippets() {
+			try {
+				const { data } = await supabase
+					.from('snippets')
+					.select('*, user_id')
+					.order('stars_count', { ascending: false })
+					.eq('user_id', user?.id)
+					.limit(2);
+
+				setFeaturedSnippets(data);
+			} catch (error) {
+				console.log(error);
+			}
+		}
+
+		fetchFeaturedSnippets();
+	}, [user?.id]); // 👈 Добавили зависимость!
+
 	console.log(user);
 	return (
 		<section className='w-full py-6 px-10'>
-			<div className='flex gap-4 w-full h-auto bg-[#0c1321] border border-[#252d3c] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
-				<div className='w-1/2 h-auto bg-[#080e1d] border border-[#19202f] rounded-3xl flex flex-col px-8 py-8 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
+			<div className='flex gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
+				{/* 1. ЛЕВАЯ КОЛОНКА (Она задаёт естественную высоту всему контейнеру!) */}
+				<div className='w-1/2 bg-[#080e1d] border border-[#19202f] rounded-3xl flex flex-col gap-5 px-8 py-9 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
 					{loading ? (
 						<ProflieAboutLoader />
 					) : (
@@ -157,8 +188,16 @@ export const PublicProfile = () => {
 						</>
 					)}
 				</div>
-				<div className='w-1/2 h-auto bg-[#080e1d] border border-[#19202f] rounded-4xl px-8 py-8 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
-					{loading ? <ProfileFeaturedSnippetsLoader /> : <ProfileFeaturedSnippets />}
+
+				{/* 2. ПРАВАЯ КОЛОНКА (Делаем relative, чтобы запереть правый блок внутри высоты левого) */}
+				<div className='w-1/2 relative max-[965px]:w-full max-[965px]:min-h-100'>
+					<div className='absolute inset-0 bg-[#080e1d] border border-[#19202f] rounded-4xl px-8 py-8 hover:border-[#252e44] hover:ring-[#252e44] overflow-hidden'>
+						{loading ? (
+							<ProfileFeaturedSnippetsLoader />
+						) : (
+							<ProfileFeaturedSnippets featuredSnippets={featuredSnippets} />
+						)}
+					</div>
 				</div>
 			</div>
 		</section>
