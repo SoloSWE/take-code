@@ -245,7 +245,7 @@ export const CreateSnippet = () => {
 			</div>
 
 			{/* MAIN CONTAINER */}
-			<div className='mx-auto bg-[#0b1220] border border-[#1b2333] rounded-2xl p-6 lg:p-8 shadow-2xl space-y-8'>
+			<div className='mx-auto bg-[#0d1424] border border-[#1b2333] rounded-2xl p-6 lg:p-8 shadow-2xl space-y-8'>
 				{/* Header */}
 				<div className='flex items-start gap-4 border-b border-[#1b2333] pb-6'>
 					<div className='p-3 bg-[#162032] border border-[#222f47] rounded-2xl text-[#2dd4bf]'>

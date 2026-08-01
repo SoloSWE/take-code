@@ -1,16 +1,18 @@
 import { cn } from '../../utils/cn';
-
 import { ChevronDown } from 'lucide-react';
-
 import { useState, useRef, useEffect } from 'react';
 
 type Props = {
 	filtersList: string[];
-	selectedFilter: string[0]
-	setSelectedFilter: (filter: string) => void
+	selectedFilter: string;
+	setSelectedFilter: (filter: string) => void;
 };
 
-export const SortDropdown = ({ filtersList, selectedFilter, setSelectedFilter }: Props) => {
+export const SortDropdown = ({
+	filtersList,
+	selectedFilter,
+	setSelectedFilter,
+}: Props) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,11 +32,13 @@ export const SortDropdown = ({ filtersList, selectedFilter, setSelectedFilter }:
 	const handleSelect = (item: string) => {
 		setSelectedFilter(item);
 		setIsOpen(false);
-		// Сюда можно добавить вызов функции фильтрации, например: onChange(item)
 	};
 
 	return (
-		<div ref={dropdownRef} className='relative w-64 font-sans select-none'>
+		<div
+			ref={dropdownRef}
+			className='relative w-full sm:w-56 md:w-64 font-sans select-none'
+		>
 			<div
 				onClick={() => setIsOpen(!isOpen)}
 				className={cn(
@@ -53,9 +57,8 @@ export const SortDropdown = ({ filtersList, selectedFilter, setSelectedFilter }:
 				/>
 			</div>
 
-			{/* Выпадающий список */}
 			{isOpen && (
-				<ul className='absolute left-0 right-0 mt-2 bg-[#060b1b] border border-[#22293d] rounded-xl py-1.5 shadow-2xl z-100 animate-in fade-in slide-in-from-top-1 duration-150'>
+				<ul className='absolute left-0 right-0 mt-2 bg-[#060b1b] border border-[#22293d] rounded-xl py-1.5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-1 duration-150'>
 					{filtersList.map((item, index) => {
 						const isSelected = item === selectedFilter;
 						return (
