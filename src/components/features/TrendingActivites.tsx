@@ -1,6 +1,31 @@
+import { useEffect, useState } from 'react';
+import { supabase } from '../../utils/supabase';
 import { UsersIcon } from 'lucide-react';
 
+
 export const TrendingActivites = () => {
+	const [totalAuthors, setTotalAuthors] = useState<number>(0);
+	const [totalCopies, setTotalCopies] = useState<number>(0);
+
+	useEffect(() => {
+		const fetchTotals = async () => {
+			try {
+				const [{ count: authorsCount }, { data: copiesCount }] = await Promise.all([
+					supabase.from('profiles').select('*', { count: 'exact' }),
+					supabase.from('snippets').select('*, copied_count', { count: 'exact' }),
+				]);
+
+				setTotalAuthors(authorsCount || 0);
+				setTotalCopies(copiesCount?.reduce((acc, snippet) => acc + (snippet.copied_count || 0), 0) || 0);
+			} catch (error) {
+				console.error('Error fetching total authors:', error);
+				console.error('Error fetching total copies:', error);
+			}
+		};
+
+		fetchTotals();
+	}, []);
+
 	return (
 		<section className='w-full max-w-7xl mx-auto px-4 py-5 mb-20'>
 			<div className='flex gap-4 w-full h-auto bg-[#101a2e] border border-[#222c41] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
@@ -23,11 +48,11 @@ export const TrendingActivites = () => {
 
 					<div className='flex items-center gap-5 mt-4 max-md:mt-2'>
 						<div>
-							<p className='font-bold text-[#38bdf8] text-3xl'>12k+</p>
+							<p className='font-bold text-[#38bdf8] text-3xl'>{totalAuthors.toLocaleString()}</p>
 							<span className='text-[#94a3b8] text-[17px]'>authors</span>
 						</div>
 						<div>
-							<p className='font-bold text-[#34d399] text-3xl'>4.8M</p>
+							<p className='font-bold text-[#34d399] text-3xl'>{totalCopies.toLocaleString()}</p>
 							<span className='text-[#94a3b8] text-[17px]'>copies</span>
 						</div>
 					</div>

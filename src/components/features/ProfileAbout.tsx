@@ -71,7 +71,8 @@ export const ProfileAbout = ({ userProfile, onOpenSettings, totalCreatedSnippets
 				<ul className='flex items-center gap-3 flex-wrap'>
 					{userProfile?.social_medias === null ? (
 						<span className='text-[#94a3b8] text-lg'>No social media</span>
-					) : ((userProfile?.social_medias || []).map((socialRaw, index) => {
+					) : (
+						(userProfile?.social_medias || []).map((socialRaw, index) => {
 							// Если это строка, парсим её в объект. Если уже объект — оставляем как есть.
 							let social: SocialMedia;
 							try {
@@ -107,12 +108,16 @@ export const ProfileAbout = ({ userProfile, onOpenSettings, totalCreatedSnippets
 			</div>
 			<div className='w-full h-auto flex items-center gap-4 mt-2'>
 				<div className='w-full bg-[#0b1c2e] border border-[#12354f] rounded-2xl px-4 py-4'>
-					<h3 className='text-[#38BDF8] text-3xl font-extrabold'>{totalCreatedSnippets}</h3>
+					<h3 className='text-[#38BDF8] text-3xl font-extrabold'>
+						{totalCreatedSnippets}
+					</h3>
 					<p className='text-[#94A3B8] font-medium'>created snippets</p>
 				</div>
 				<div className='w-full bg-[#0b1e27] border border-[#113b3a] rounded-2xl px-4 py-4'>
-					<h3 className='text-[#34D399] text-3xl font-extrabold'>{snippetsCountCopy.toLocaleString()}</h3>
-					<p className='text-[#94A3B8] font-medium'>upvotes copies</p>
+					<h3 className='text-[#34D399] text-3xl font-extrabold'>
+						{snippetsCountCopy.toLocaleString()}
+					</h3>
+					<p className='text-[#94A3B8] font-medium'>total copies</p>
 				</div>
 			</div>
 		</div>

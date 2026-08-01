@@ -108,7 +108,8 @@ export const Profile = () => {
 				setSnippetsCount(snippetsCount.data?.length || 0);
 				setSnippetsCountCopy(snippetsCount.data?.reduce((acc, snippet) => acc + (snippet.copied_count || 0), 0) || 0);
 			} catch (error) {
-				console.log(error);
+				console.error('Error fetching featured snippets:', error);
+				console.error('Error fetching snippet copies:', error);
 			} finally {
 				setLoading(false);
 			}

@@ -36,6 +36,8 @@ export const PublicProfile = () => {
 	const [featuredSnippets, setFeaturedSnippets] = useState<
 	snippetCard[] | null
 	>([]);
+	const [snippetsCount, setSnippetsCount] = useState<number>(0);
+	const [snippetsCountCopy, setSnippetsCountCopy] = useState<number>(0);
 
 	const [loading, setLoading] = useState<boolean>(true);
 
@@ -67,25 +69,39 @@ export const PublicProfile = () => {
 		if (!user?.id) return;
 
 		async function fetchFeaturedSnippets() {
-			setLoading(true)
+			setLoading(true);
 			try {
-				const { data } = await supabase
-					.from('snippets')
-					.select('*, profiles(avatar_url, tag, username)')
-					.order('stars_count', { ascending: false })
-					.eq('user_id', user?.id)
-					.limit(2);
+				const [featuredSnippets, snippetsCount] = await Promise.all([
+					supabase
+						.from('snippets')
+						.select('*, profiles(avatar_url, tag, username)')
+						.order('stars_count', { ascending: false })
+						.eq('user_id', user?.id)
+						.limit(2),
+					supabase
+						.from('snippets')
+						.select('*, copied_count')
+						.eq('user_id', user?.id),
+				]);
 
-				setFeaturedSnippets(data);
+				setFeaturedSnippets(featuredSnippets.data || []);
+				setSnippetsCount(snippetsCount.data?.length || 0);
+				setSnippetsCountCopy(
+					snippetsCount.data?.reduce(
+						(acc, snippet) => acc + (snippet.copied_count || 0),
+						0,
+					) || 0,
+				);
 			} catch (error) {
-				console.log(error);
+				console.error('Error fetching featured snippets:', error);
+				console.error('Error fetching snippet copies:', error);
 			} finally {
 				setLoading(false);
 			}
 		}
 
 		fetchFeaturedSnippets();
-	}, [user?.id]); // 👈 Добавили зависимость!
+	}, [user?.id]); 
 
 	return (
 		<section className='w-full py-6 px-10'>
@@ -173,19 +189,17 @@ export const PublicProfile = () => {
 								<div className='w-full h-auto flex items-center gap-4 mt-4'>
 									<div className='w-full bg-[#0b1c2e] border border-[#12354f] rounded-2xl px-4 py-4'>
 										<h3 className='text-[#38BDF8] text-3xl font-extrabold'>
-											128
+											{snippetsCount.toLocaleString()}
 										</h3>
 										<p className='text-[#94A3B8] font-medium'>
-											snippets shared
+											created snippets
 										</p>
 									</div>
 									<div className='w-full bg-[#0b1e27] border border-[#113b3a] rounded-2xl px-4 py-4'>
 										<h3 className='text-[#34D399] text-3xl font-extrabold'>
-											24.7k
+											{snippetsCountCopy.toLocaleString()}
 										</h3>
-										<p className='text-[#94A3B8] font-medium'>
-											upvotes received
-										</p>
+										<p className='text-[#94A3B8] font-medium'>total copies</p>
 									</div>
 								</div>
 							</div>
