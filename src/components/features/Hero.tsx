@@ -90,7 +90,7 @@ export const Hero = () => {
 				/>
 				<button
 					onClick={handleSearchSubmit}
-					className='w-45 h-12 rounded-2xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-semibold cursor-pointer max-[640px]:w-full max-sm:w-75 text-white active:scale-98 transition-transform'
+					className='w-45 h-12 rounded-2xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#0f172a] active:scale-98 transition-transform'
 				>
 					Explore snippets
 				</button>
