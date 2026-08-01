@@ -31,12 +31,12 @@ export const CodeBlock = ({ code, language }: CodeBlockProps) => {
 		hightLightCode();
 	}, [code, language]);
 	return (
-		<div className='flex justify-center px-6 py-6 bg-[#0a1123] rounded-b-xl border border-[#222b3e] [&_pre]:bg-transparent! [&_pre]:outline-hidden'>
+		<div className='flex justify-start sm:justify-center p-4 sm:p-6 bg-[#0a1123] rounded-b-xl border border-[#222b3e] [&_pre]:bg-transparent! [&_pre]:outline-hidden overflow-x-auto w-full'>
 			{isLoading ? (
 				<CodeLoader />
 			) : (
 				<div
-					className='w-full font-jetbrains'
+					className='w-full font-jetbrains text-xs sm:text-sm'
 					dangerouslySetInnerHTML={{ __html: codeHTML }}
 				/>
 			)}
