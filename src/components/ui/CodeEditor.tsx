@@ -86,9 +86,9 @@ export const CodeEditor = ({ code, onChange, language, filename }: CodeEditorPro
 			</div>
 
 			{/* Поле ввода + Полноценная Shiki подсветка */}
-			<div className='relative flex min-h-[320px] font-mono text-sm leading-relaxed overflow-hidden'>
+			<div className='relative flex min-h-80 font-mono text-sm leading-relaxed overflow-hidden'>
 				{/* Номера строк (01, 02, 03...) */}
-				<div className='select-none py-4 px-3.5 text-right bg-[#050b1c] border-r border-[#1b2333] text-slate-600 text-xs font-mono flex flex-col space-y-[1px] min-w-[48px] z-10'>
+				<div className='select-none py-4 px-3.5 text-right bg-[#050b1c] border-r border-[#1b2333] text-slate-600 text-xs font-mono flex flex-col space-y-px min-w-12 z-10'>
 					{lineNumbers.map(num => (
 						<span key={num} className='leading-relaxed'>
 							{num}

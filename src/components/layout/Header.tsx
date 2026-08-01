@@ -1,25 +1,48 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDebounce } from 'ahooks';
 
-import { Braces, Search } from 'lucide-react';
-
-import type { User } from '@supabase/supabase-js';
+import { cn } from '../../utils/cn';
 import { supabase } from '../../utils/supabase';
+import type { User } from '@supabase/supabase-js';
 
-import { Input } from '../ui/Input';
+import { Braces, Code2, Loader2, Search } from 'lucide-react';
 
 import { AuntatificatedUserMenu } from '../features/AuntatificatedUserMenu';
 import type { UserProfile } from '../../pages/Profile';
-import { cn } from '../../utils/cn';
+
+import { Input } from '../ui/Input';
+
+// Тип для элементов быстрого поиска
+type SearchResultSnippet = {
+	id: string;
+	title: string;
+	languages?: {
+		name: string;
+	};
+};
 
 export const Header = () => {
-	const location = useLocation()
+	const location = useLocation();
+	const navigate = useNavigate();
+
 	const [user, setUser] = useState<User | null>(null);
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
 	const [open, setOpened] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [searchQuery, setSearchQuery] = useState<string>('');
 
+	// Поиск и результатов
+	const [searchQuery, setSearchQuery] = useState<string>('');
+	const debouncedSearchQuery = useDebounce(searchQuery, { wait: 300 }); // Уменьшили задержку до 300ms для отклика
+
+	const [searchResults, setSearchResults] = useState<SearchResultSnippet[]>([]);
+	const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
+	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+	const searchRef = useRef<HTMLDivElement>(null);
+
+	// 1. Авторизация
 	useEffect(() => {
 		supabase.auth.getSession().then(({ data: { session } }) => {
 			setUser(session?.user || null);
@@ -36,27 +59,87 @@ export const Header = () => {
 	}, []);
 
 	useEffect(() => {
-			if (user?.id) {
-				async function fetchUser() {
-					setLoading(true);
-					try {
-						const { data } = await supabase
-							.from('profiles')
-							.select('*')
-							.eq('id', user?.id);
-	
-						if (data) {
-							setUserProfile(data[0]);
-						}
-					} catch (error) {
-						console.log(error);
-					} finally {
-						setLoading(false);
+		if (user?.id) {
+			async function fetchUser() {
+				setLoading(true);
+				try {
+					const { data } = await supabase
+						.from('profiles')
+						.select('*')
+						.eq('id', user?.id);
+
+					if (data) {
+						setUserProfile(data[0]);
 					}
+				} catch (error) {
+					console.log(error);
+				} finally {
+					setLoading(false);
 				}
-				fetchUser();
 			}
-		}, [user?.id]);
+			fetchUser();
+		}
+	}, [user?.id]);
+
+	// 2. Живой поиск по БД через Supabase
+	useEffect(() => {
+		const fetchSearchResults = async () => {
+			const query = debouncedSearchQuery.trim();
+			if (!query) {
+				setSearchResults([]);
+				setIsDropdownOpen(false);
+				return;
+			}
+
+			setIsSearchLoading(true);
+			setIsDropdownOpen(true);
+
+			try {
+				// Ищем по совпадению в названии (ilike = регистронезависимый поиск)
+				const { data, error } = await supabase
+					.from('snippets')
+					.select('id, title, languages(name)')
+					.ilike('title', `%${query}%`)
+					.limit(5);
+
+				if (error) {
+					console.error('Ошибка поиска:', error);
+					setSearchResults([]);
+				} else {
+					// Приводим тип через unknown
+					setSearchResults((data as unknown as SearchResultSnippet[]) || []);
+				}
+			} catch (err) {
+				console.error(err);
+			} finally {
+				setIsSearchLoading(false);
+			}
+		};
+
+		fetchSearchResults();
+	}, [debouncedSearchQuery]);
+
+	// 3. Закрытие выпадающего списка при клике вне поля поиска
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				searchRef.current &&
+				!searchRef.current.contains(event.target as Node)
+			) {
+				setIsDropdownOpen(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
+
+	// Переход на страницу сниппета
+	const handleSelectSnippet = (id: string) => {
+		setIsDropdownOpen(false);
+		setSearchQuery('');
+		navigate(`/snippet/${id}`); // Поменяй путь на свой формат роута (например /exploreHub/${id})
+	};
 
 	return (
 		<header className='py-6 px-10 flex items-center justify-between border-b border-[#222b3e] max-lg:px-4'>
@@ -71,7 +154,8 @@ export const Header = () => {
 				</div>
 			</Link>
 
-			<div className='max-md:hidden'>
+			{/* Контейнер поиска с относительно позиционированным выпадающим списком */}
+			<div ref={searchRef} className='relative max-md:hidden'>
 				<Input
 					width={400}
 					height={45}
@@ -83,6 +167,44 @@ export const Header = () => {
 					placeholderColor={'#64748b'}
 					otherClass='max-lg:w-60 max-lg:pr-5 max-lg:h-10'
 				/>
+
+				{/* Выпадающее меню с результатами */}
+				{isDropdownOpen && (
+					<div className='absolute left-0 top-13 w-full bg-[#0c1321] border border-[#222b3e] rounded-2xl shadow-2xl p-2 z-50 overflow-hidden backdrop-blur-md'>
+						{isSearchLoading ? (
+							<div className='flex items-center justify-center py-6 text-[#64748b] gap-2'>
+								<Loader2 className='w-4 h-4 animate-spin text-[#38BDF8]' />
+								<span className='text-sm'>Поиск...</span>
+							</div>
+						) : searchResults.length > 0 ? (
+							<ul className='flex flex-col gap-1'>
+								{searchResults.map(snippet => (
+									<li
+										key={snippet.id}
+										onClick={() => handleSelectSnippet(snippet.id)}
+										className='flex items-center justify-between p-3 rounded-xl hover:bg-[#162032] cursor-pointer transition-colors group'
+									>
+										<div className='flex items-center gap-2.5 overflow-hidden'>
+											<Code2 className='w-4 h-4 text-[#38BDF8] shrink-0' />
+											<span className='text-sm font-medium text-slate-200 group-hover:text-white truncate'>
+												{snippet.title}
+											</span>
+										</div>
+										{snippet.languages?.name && (
+											<span className='text-[11px] font-mono px-2 py-0.5 rounded-md bg-[#1e293b] text-[#94A3B8] border border-[#334155] shrink-0'>
+												{snippet.languages.name}
+											</span>
+										)}
+									</li>
+								))}
+							</ul>
+						) : (
+							<div className='py-6 text-center text-sm text-[#64748b]'>
+								Ничего не найдено по запросу "{searchQuery}"
+							</div>
+						)}
+					</div>
+				)}
 			</div>
 
 			<div className='flex items-center justify-between gap-4.5 max-[535px]:hidden'>
@@ -92,14 +214,24 @@ export const Header = () => {
 				<ul className='flex items-center gap-4.5'>
 					<Link to='/exploreHub'>
 						<li>
-							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/exploreHub' && 'text-white')}>
+							<span
+								className={cn(
+									'text-[#94A3B8] cursor-pointer transition-colors hover:text-white',
+									location.pathname === '/exploreHub' && 'text-white',
+								)}
+							>
 								Explore
 							</span>
 						</li>
 					</Link>
 					<Link to='/community'>
 						<li>
-							<span className={cn('text-[#94A3B8] cursor-pointer transition-colors hover:text-white', location.pathname === '/community' && 'text-white')}>
+							<span
+								className={cn(
+									'text-[#94A3B8] cursor-pointer transition-colors hover:text-white',
+									location.pathname === '/community' && 'text-white',
+								)}
+							>
 								Community
 							</span>
 						</li>
