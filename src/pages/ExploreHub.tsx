@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import {
 	Pagination,
@@ -20,7 +21,6 @@ import { SortDropdown } from '../components/features/SortDropDown';
 import type { snippetCard } from '../components/features/Showcase';
 import { Snippets } from '../components/features/Snippets';
 
-
 export type languagesT = {
 	id: string;
 	name: string;
@@ -29,9 +29,9 @@ export type languagesT = {
 };
 
 export type frameworksT = {
-    id: string,
-    name: string
-}
+	id: string;
+	name: string;
+};
 
 export type tagsT = {
 	id: string;
@@ -41,65 +41,64 @@ export type tagsT = {
 const sortingFiltersT = ['Trending', 'Most Copied', 'Recent'];
 
 export const ExploreHub = () => {
-	const [snippets, setSnippets] = useState<snippetCard[] | null>([]);
+	const [searchParams, setSearchParams] = useSearchParams();
 
-	const [selectedLanguage, setSelectedLanguage] = useState<string>('');
-	const [selectedFramework, setSelectedFramework] = useState<string>('');
-	const [selectedTag, setSelectedTag] = useState<string>('');
-	const [selectedFilter, setSelectedFilter] = useState<string>(
-		sortingFiltersT[0],
+	// 1. Справочники из БД
+	const [languages, setLanguages] = useState<languagesT[] | null>(null);
+	const [frameworks, setFrameworks] = useState<frameworksT[] | null>(null);
+	const [tags, setTags] = useState<tagsT[] | null>(null);
+	const [loading, setLoading] = useState<boolean>(false);
+
+	// 2. Считываем параметры из URL (Единый источник правды)
+	const searchQuery = searchParams.get('search') || '';
+	const selectedFilter = searchParams.get('filter') || sortingFiltersT[0];
+	const currentPage = Number(searchParams.get('page')) || 1;
+
+	const langParam = searchParams.get('language');
+	const fwParam = searchParams.get('framework');
+	const tagParam = searchParams.get('tag');
+
+	// 3. Вычисляем текущие объекты и ID из URL
+	const currentLang = languages?.find(
+		l => l.name.toLowerCase() === langParam?.toLowerCase(),
+	);
+	const currentFramework = frameworks?.find(
+		f => f.name.toLowerCase() === fwParam?.toLowerCase(),
+	);
+	const currentTag = tags?.find(
+		t => t.name.toLowerCase() === tagParam?.toLowerCase(),
 	);
 
-	const [reset, setReset] = useState<boolean>(false);
+	const selectedLanguage = currentLang?.id || '';
+	const selectedFramework = currentFramework?.id || '';
+	const selectedTag = currentTag?.id || '';
 
-	const [loading, setLoading] = useState<boolean>(false);
-	const [languages, setLanguages] = useState<languagesT[] | null>([]);
-	const [frameworks, setFrameworks] = useState<frameworksT[] | null>([]);
-	const [tags, setTags] = useState<tagsT[] | null>([]);
+	const isActive = searchQuery.length > 0;
 
-	const currentLang = languages?.find(lang => lang.id === selectedLanguage);
-	const currentFramework = frameworks?.find(fw => fw.id === selectedFramework);
-	const currentTag = tags?.find(t => t.id === selectedTag);
-
-	const [searchQuery, setSearchQuery] = useState<string>('');
-
-	const isActive = searchQuery?.length > 0;
-
-	const [currentPage, setCurrentPage] = useState<number>(1);
+	// Состояния для сниппетов
+	const [snippets, setSnippets] = useState<snippetCard[] | null>([]);
+	const [snippetsLoading, setSnippetsLoading] = useState<boolean>(true);
 	const [totalCount, setTotalCount] = useState<number>(0);
 
 	const pageSize = 8;
 	const totalPages = Math.ceil(totalCount / pageSize);
 
-	const toggleReset = () => {
-		setReset(!reset);
-		setSelectedLanguage('');
-		setSelectedFramework(''); // Сбрасываем фреймворк
-		setSelectedTag('');
-	};
-
-	const searchFilteredSnippets = snippets
-		? snippets.filter(snippet =>
-				snippet.title.toLowerCase().includes(searchQuery.toLowerCase()),
-			)
-		: null;
-
+	// 4. Загрузка справочников из БД
 	useEffect(() => {
 		async function fetchData() {
 			setLoading(true);
 			try {
-				const [languagesResponce, libsFrameworkdResponce, tagsResponce] =
-					await Promise.all([
-						supabase.from('languages').select('*, snippets(count)'),
-						supabase.from('frameworks').select('*'),
-						supabase.from('tags').select('*'),
-					]);
+				const [languagesRes, frameworksRes, tagsRes] = await Promise.all([
+					supabase.from('languages').select('*, snippets(count)'),
+					supabase.from('frameworks').select('*'),
+					supabase.from('tags').select('*'),
+				]);
 
-				setLanguages(languagesResponce.data);
-				setFrameworks(libsFrameworkdResponce.data);
-				setTags(tagsResponce.data);
+				setLanguages(languagesRes.data || []);
+				setFrameworks(frameworksRes.data || []);
+				setTags(tagsRes.data || []);
 			} catch (error) {
-				console.log(error);
+				console.error('Ошибка загрузки справочников:', error);
 			} finally {
 				setLoading(false);
 			}
@@ -108,9 +107,74 @@ export const ExploreHub = () => {
 		fetchData();
 	}, []);
 
+	// 5. Вспомогательная функция обновления URL
+	const updateSearchParams = (updates: Record<string, string | null>) => {
+		const params = new URLSearchParams(searchParams);
+
+		Object.entries(updates).forEach(([key, value]) => {
+			if (value) {
+				params.set(key, value);
+			} else {
+				params.delete(key);
+			}
+		});
+
+		// Сбрасываем пагинацию при изменении поиска/фильтров
+		if (!('page' in updates)) {
+			params.delete('page');
+		}
+
+		setSearchParams(params, { replace: true });
+	};
+
+	// Хэндлеры UI
+	const handleSelectLanguage = (langId: string) => {
+		const lang = languages?.find(l => l.id === langId);
+		updateSearchParams({
+			language: lang ? lang.name : null,
+			framework: null,
+			tag: null,
+		});
+	};
+
+	const handleSelectFramework = (fwId: string) => {
+		const fw = frameworks?.find(f => f.id === fwId);
+		updateSearchParams({
+			framework: fw ? fw.name : null,
+			tag: null,
+		});
+	};
+
+	const handleSelectTag = (tagId: string) => {
+		const tag = tags?.find(t => t.id === tagId);
+		updateSearchParams({
+			tag: tag ? tag.name : null,
+		});
+	};
+
+	const handleSearchChange = (value: string) => {
+		updateSearchParams({ search: value || null });
+	};
+
+	const handleFilterSelect = (filter: string) => {
+		updateSearchParams({
+			filter: filter === sortingFiltersT[0] ? null : filter,
+		});
+	};
+
+	const handlePageChange = (page: number) => {
+		updateSearchParams({ page: page > 1 ? page.toString() : null });
+	};
+
+	const toggleReset = () => {
+		setSearchParams({}, { replace: true });
+	};
+
+	// 6. Загрузка сниппетов из Supabase
 	useEffect(() => {
 		const fetchSnippets = async () => {
-			setSnippets([]); // Скелетоны во время загрузки
+			setSnippetsLoading(true);
+			setSnippets(null);
 
 			try {
 				const {
@@ -118,34 +182,28 @@ export const ExploreHub = () => {
 				} = await supabase.auth.getUser();
 				const currentUserId = user?.id;
 
-				// Расчет диапазона для Supabase
 				const from = (currentPage - 1) * pageSize;
 				const to = from + pageSize - 1;
 
-				// 2. Добавляем { count: 'exact' } для получения точного количества записей в БД
 				let query = supabase.from('snippets').select(
 					`
-						*,
-						languages(name, color, background, borderColor, icon),
-						profiles:user_id(tag, avatar_url),
-						snippets_stars(user_id),
-						dependencies:snippet_dependencies(
-							dependencies(id, name, install_command, color, bg, border_color)
-						)
-					`,
+                        *,
+                        languages(name, color, background, borderColor, icon),
+                        profiles:user_id(tag, avatar_url),
+                        snippets_stars(user_id),
+                        dependencies:snippet_dependencies(
+                            dependencies(id, name, install_command, color, bg, border_color)
+                        )
+                    `,
 					{ count: 'exact' },
 				);
 
-				// Фильтры
-				if (selectedLanguage) {
-					query = query.eq('language_id', selectedLanguage);
-				}
+				if (selectedLanguage) query = query.eq('language_id', selectedLanguage);
 				if (selectedFramework)
 					query = query.eq('framework_id', selectedFramework);
 				if (selectedTag && currentTag)
 					query = query.contains('tags', [currentTag.name]);
 
-				// Сортировка
 				if (selectedFilter === 'Trending') {
 					query = query.order('stars_count', { ascending: false });
 				} else if (selectedFilter === 'Most Copied') {
@@ -154,38 +212,38 @@ export const ExploreHub = () => {
 					query = query.order('created_at', { ascending: false });
 				}
 
-				// 3. Применяем диапазоны пагинации
 				query = query.range(from, to);
 
 				const { data, count, error } = await query;
 
 				if (error) {
 					console.error('Ошибка Supabase:', error);
+					setSnippets([]);
 					return;
 				}
 
-				if (count !== null) {
-					setTotalCount(count); // Запоминаем количество
-				}
+				if (count !== null) setTotalCount(count);
 
 				if (data) {
-					const formattedData = data.map(item => {
-						const hasStarred =
+					const formattedData = data.map(item => ({
+						...item,
+						is_starred_by_user: Boolean(
 							Array.isArray(item.snippets_stars) &&
 							item.snippets_stars.some(
 								(star: { user_id: string }) => star.user_id === currentUserId,
-							);
-
-						return {
-							...item,
-							is_starred_by_user: Boolean(hasStarred),
-						};
-					});
+							),
+						),
+					}));
 
 					setSnippets(formattedData);
+				} else {
+					setSnippets([]);
 				}
 			} catch (err) {
 				console.error('Ошибка при загрузке:', err);
+				setSnippets([]);
+			} finally {
+				setSnippetsLoading(false);
 			}
 		};
 
@@ -198,6 +256,12 @@ export const ExploreHub = () => {
 		selectedFilter,
 		currentPage,
 	]);
+
+	const searchFilteredSnippets = snippets
+		? snippets.filter(snippet =>
+				snippet.title.toLowerCase().includes(searchQuery.toLowerCase()),
+			)
+		: null;
 
 	const getFilterText = () => {
 		if (!selectedLanguage) return 'Filter';
@@ -236,18 +300,11 @@ export const ExploreHub = () => {
 						frameworks={frameworks}
 						tags={tags}
 						selectedLanguage={selectedLanguage}
-						setSelectedLanguage={langId => {
-							setSelectedLanguage(langId);
-							setSelectedFramework('');
-							setSelectedTag('');
-						}}
+						setSelectedLanguage={handleSelectLanguage}
 						selectedFramework={selectedFramework}
-						setSelectedFramework={fwId => {
-							setSelectedFramework(fwId);
-							setSelectedTag('');
-						}}
+						setSelectedFramework={handleSelectFramework}
 						selectedTag={selectedTag}
-						setSelectedTag={setSelectedTag}
+						setSelectedTag={handleSelectTag}
 						toggleReset={toggleReset}
 						loading={loading}
 					/>
@@ -258,7 +315,7 @@ export const ExploreHub = () => {
 							<div className='relative flex items-center w-full'>
 								<input
 									value={searchQuery}
-									onChange={e => setSearchQuery(e.target.value)}
+									onChange={e => handleSearchChange(e.target.value)}
 									className='w-full bg-[#060b1b] border border-[#22293d] text-white text-[16px] px-4 py-2.5 pl-11 pr-11 rounded-xl focus:outline-none focus:ring-[#343a4c] focus:border-[#343a4c] max-lg:text-[14px]'
 									type='text'
 									placeholder='Search snippets...'
@@ -278,14 +335,14 @@ export const ExploreHub = () => {
 											isActive ? 'visible opacity-100' : 'invisible opacity-0',
 										)}
 										size={18}
-										onClick={() => setSearchQuery('')}
+										onClick={() => handleSearchChange('')}
 									/>
 								</div>
 							</div>
 							<SortDropdown
 								filtersList={sortingFiltersT}
 								selectedFilter={selectedFilter}
-								setSelectedFilter={setSelectedFilter}
+								setSelectedFilter={handleFilterSelect}
 							/>
 						</div>
 					</div>
@@ -298,63 +355,99 @@ export const ExploreHub = () => {
 						</p>
 					</div>
 					<div className='mt-4'>
-						<Snippets
-							snippets={searchFilteredSnippets}
-							activeSnippetCategory={selectedFilter}
-						/>
-						{/* 4. Оживляем UI Пагинации */}
-						{totalPages > 1 && (
-							<div className='mt-6 flex justify-start'>
-								<Pagination>
-									<PaginationContent>
-										<PaginationItem>
-											<PaginationPrevious
-												onClick={e => {
-													e.preventDefault();
-													if (currentPage > 1) setCurrentPage(prev => prev - 1);
-												}}
-												className={
-													currentPage === 1
-														? 'pointer-events-none opacity-40'
-														: ''
-												}
-											/>
-										</PaginationItem>
-
-										{Array.from({ length: totalPages }, (_, i) => i + 1).map(
-											page => (
-												<PaginationItem key={page}>
-													<PaginationLink
-														isActive={page === currentPage}
-														onClick={e => {
-															e.preventDefault();
-															setCurrentPage(page);
-														}}
-													>
-														{page}
-													</PaginationLink>
-												</PaginationItem>
-											),
-										)}
-
-										<PaginationItem>
-											<PaginationNext
-												onClick={e => {
-													e.preventDefault();
-													if (currentPage < totalPages)
-														setCurrentPage(prev => prev + 1);
-												}}
-												className={
-													currentPage === totalPages
-														? 'pointer-events-none opacity-40'
-														: ''
-												}
-											/>
-										</PaginationItem>
-									</PaginationContent>
-								</Pagination>
+						{snippetsLoading ? (
+							<Snippets
+								snippets={null}
+								activeSnippetCategory={selectedFilter}
+							/>
+						) : searchFilteredSnippets && searchFilteredSnippets.length === 0 ? (
+							<div className='flex flex-col items-center justify-center py-16 px-4 border border-dashed border-[#252d3c] rounded-3xl bg-[#0c1321]/50 text-center space-y-3'>
+								<div className='p-4 bg-[#162032] border border-[#222f47] rounded-full text-[#38BDF8] mb-1'>
+									<Search className='w-8 h-8' />
+								</div>
+								<h3 className='text-xl font-bold text-white'>
+									Сниппеты не найдены
+								</h3>
+								<p className='text-sm text-[#64748B] max-w-md leading-relaxed'>
+									По вашему запросу {searchQuery ? `"${searchQuery}"` : ''}{' '}
+									ничего не найдено. Попробуйте изменить фильтры или сбросить
+									поиск.
+								</p>
+								{(searchQuery ||
+									selectedLanguage ||
+									selectedFramework ||
+									selectedTag) && (
+									<button
+										onClick={toggleReset}
+										className='mt-2 px-4 py-2 bg-[#1b2333] hover:bg-[#252d3c] text-[#38BDF8] text-sm font-semibold rounded-xl transition-all cursor-pointer'
+									>
+										Сбросить фильтры
+									</button>
+								)}
 							</div>
+						) : (
+							<Snippets
+								snippets={searchFilteredSnippets}
+								activeSnippetCategory={selectedFilter}
+							/>
 						)}
+
+						{!snippetsLoading &&
+							totalPages > 1 &&
+							searchFilteredSnippets &&
+							searchFilteredSnippets.length > 0 && (
+								<div className='mt-6 flex justify-start'>
+									<Pagination>
+										<PaginationContent>
+											<PaginationItem>
+												<PaginationPrevious
+													onClick={e => {
+														e.preventDefault();
+														if (currentPage > 1)
+															handlePageChange(currentPage - 1);
+													}}
+													className={
+														currentPage === 1
+															? 'pointer-events-none opacity-40'
+															: ''
+													}
+												/>
+											</PaginationItem>
+
+											{Array.from({ length: totalPages }, (_, i) => i + 1).map(
+												page => (
+													<PaginationItem key={page}>
+														<PaginationLink
+															isActive={page === currentPage}
+															onClick={e => {
+																e.preventDefault();
+																handlePageChange(page);
+															}}
+														>
+															{page}
+														</PaginationLink>
+													</PaginationItem>
+												),
+											)}
+
+											<PaginationItem>
+												<PaginationNext
+													onClick={e => {
+														e.preventDefault();
+														if (currentPage < totalPages)
+															handlePageChange(currentPage + 1);
+													}}
+													className={
+														currentPage === totalPages
+															? 'pointer-events-none opacity-40'
+															: ''
+													}
+												/>
+											</PaginationItem>
+										</PaginationContent>
+									</Pagination>
+								</div>
+							)}
 					</div>
 				</div>
 			</div>

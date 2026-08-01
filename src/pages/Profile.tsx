@@ -15,6 +15,7 @@ import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileF
 import { cn } from '../utils/cn';
 import { UserSnippetsList } from '../components/features/UserSnippetsList';
 import { Link } from 'react-router-dom';
+import { UserBookmarkedSnippetsList } from '../components/features/UserBookmarkedSnippetsList';
 
 
 export interface SocialMedia {
@@ -41,6 +42,7 @@ export const Profile = () => {
 	const [featuredSnippets, setFeaturedSnippets] = useState<snippetCard[] | null>(null);
 	const [snippetsCount, setSnippetsCount] = useState<number>(0);
 	const [snippetsCountCopy, setSnippetsCountCopy] = useState<number>(0);
+	const [bookmarkedSnippetsCount, setBookmarkedSnippetsCount] = useState<number>(0);
 
 	const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 	const [selectedCategory, setSelectedCategory] =
@@ -75,7 +77,7 @@ export const Profile = () => {
 						setUserProfile(data[0]);
 					}
 				} catch (error) {
-					console.log(error);
+					console.error(error);
 				} finally {
 					setLoading(false);
 				}
@@ -91,7 +93,7 @@ export const Profile = () => {
 		async function fetchFeaturedSnippets() {
 			setLoading(true);
 			try {
-				const [featuredSnippets, snippetsCount] = await Promise.all([
+				const [featuredSnippets, snippetsCount, bookmarkedSnippetsCount] = await Promise.all([
 					supabase
 						.from('snippets')
 						.select('*, profiles(avatar_url, tag, username)')
@@ -102,10 +104,15 @@ export const Profile = () => {
 						.from('snippets')
 						.select('*, copied_count')
 						.eq('user_id', user?.id),
+					supabase
+						.from('bookmarks')
+						.select('*', { count: 'exact' })
+						.eq('user_id', user?.id)
 				]);
 
 				setFeaturedSnippets(featuredSnippets.data || []);
 				setSnippetsCount(snippetsCount.data?.length || 0);
+				setBookmarkedSnippetsCount(bookmarkedSnippetsCount.data?.length || 0);
 				setSnippetsCountCopy(snippetsCount.data?.reduce((acc, snippet) => acc + (snippet.copied_count || 0), 0) || 0);
 			} catch (error) {
 				console.error('Error fetching featured snippets:', error);
@@ -180,7 +187,7 @@ export const Profile = () => {
 					</div>
 					<div className='flex items-center gap-4'>
 						<p className='text-[#64748b] font-mono text-[16px]'>
-							{snippetsCount} published
+							{selectedCategory === 'My Snippets' ? snippetsCount : bookmarkedSnippetsCount} published
 						</p>
 						<Link to={'/createSnippet'}>
 							<button className='w-full h-auto px-5 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>
@@ -190,8 +197,12 @@ export const Profile = () => {
 					</div>
 				</div>
 			</div>
-
-			<UserSnippetsList />
+			
+			{selectedCategory === 'My Snippets' ? (
+				<UserSnippetsList />
+			) : (
+				<UserBookmarkedSnippetsList />
+			)}
 
 			{isSettingsOpen && (
 				<ProfileSettings onClose={() => setIsSettingsOpen(false)} user={user} />

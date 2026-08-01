@@ -11,6 +11,7 @@ import { Button } from '../components/ui/Button';
 import { CodeBlock } from '../components/ui/CodeBlock';
 import type { dependencyT } from '../components/features/Showcase';
 import { SnippetPageSkeleton } from '../components/ui/Skeletons/SnippetPageSkeleton';
+import { BookmarkButton } from '../components/ui/BookmarkButton';
 
 interface snippetCard {
 	id: string;
@@ -437,6 +438,10 @@ export const Snippet = () => {
 										/>
 										<span>{snippet?.stars_count}</span>
 									</button>
+									<BookmarkButton
+										snippetId={snippet?.id ?? ''}
+										userId={currentUserId}
+									/>
 									<Button
 										onClick={() => copyCode(snippet?.code ?? '', snippet?.id ?? '')}
 										copiedStatus={copied}
