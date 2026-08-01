@@ -36,7 +36,7 @@ export interface UserProfile {
 
 export const Profile = () => {
 	const [user, setUser] = useState<User | null>(null);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 	const [featuredSnippets, setFeaturedSnippets] = useState<snippetCard[] | null>(null);
 

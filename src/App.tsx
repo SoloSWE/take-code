@@ -9,6 +9,7 @@ import { ExploreHub } from "./pages/ExploreHub";
 import { Snippet } from "./pages/Snippet";
 
 import { MainLayout } from "./components/layout/MainLayout";
+import { EditSnippet } from "./pages/EditSnippet";
 
 export const App = () => {
 	return (
@@ -22,6 +23,7 @@ export const App = () => {
 				<Route path='/snippet/:id' element={<Snippet />} />
 				<Route path='/user/:id' element={<PublicProfile />} />
 				<Route path='/createSnippet' element={<CreateSnippet />} />
+				<Route path='/editSnippet/:id' element={<EditSnippet />} />
 			</Route>
 		</Routes>
 	);

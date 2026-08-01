@@ -1,233 +1,228 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { supabase } from '../utils/supabase';
 import {
 	ArrowLeft,
+	CheckCircle2,
 	Sparkles,
 	Code2,
+	Layers,
+	Tag,
 	Plus,
 	X,
-	CheckCircle2,
-	Layers,
-	FileText,
 	Box,
-	Tag,
+	FileText,
 } from 'lucide-react';
-import { supabase } from '../utils/supabase';
 import { CodeEditor } from '../components/ui/CodeEditor';
 
-export type OptionItem = {
+type OptionItem = {
 	id: string;
 	name: string;
 };
 
-export const CreateSnippet = () => {
+export const EditSnippet = () => {
+	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState(false);
 
-	// Справочники из Supabase
+	// Supabase Lookup Lists
 	const [languagesList, setLanguagesList] = useState<OptionItem[]>([]);
 	const [frameworksList, setFrameworksList] = useState<OptionItem[]>([]);
 	const [dependenciesList, setDependenciesList] = useState<OptionItem[]>([]);
 	const [tagsList, setTagsList] = useState<OptionItem[]>([]);
 
-	// Состояния формы
+	// Form Fields
 	const [title, setTitle] = useState('');
-	const [codeFilename, setCodeFilename] = useState('use-session-guard.ts');
+	const [codeFilename, setCodeFilename] = useState('');
 	const [description, setDescription] = useState('');
-	const [selectedLanguageId, setSelectedLanguageId] = useState<string>('');
-	const [selectedFrameworkId, setSelectedFrameworkId] = useState<string>('');
 	const [code, setCode] = useState('');
-
-	// Выбранные теги и зависимости
+	const [readme, setReadme] = useState('');
+	const [selectedLanguageId, setSelectedLanguageId] = useState('');
+	const [selectedFrameworkId, setSelectedFrameworkId] = useState('');
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
-	const [tagInput, setTagInput] = useState('');
 	const [selectedDependencyIds, setSelectedDependencyIds] = useState<string[]>(
 		[],
 	);
-	// Состояния для создания кастомной зависимости
+
+	// Local UI State for Custom Tag & Dependency Inputs
+	const [tagInput, setTagInput] = useState('');
+	const [isAddingCustomDep, setIsAddingCustomDep] = useState(false);
 	const [customDepName, setCustomDepName] = useState('');
 	const [customDepCommand, setCustomDepCommand] = useState('');
-	const [isAddingCustomDep, setIsAddingCustomDep] = useState(false);
 
-	// UI поля
-	const [readme, setReadme] = useState('');
+	// Derived State for CodeEditor language name
+	const currentLangName =
+		languagesList.find(lang => lang.id === selectedLanguageId)?.name || '';
 
-	// Загружаем все данные из БД
+	// 1. FETCH DATA
 	useEffect(() => {
-		async function fetchMetadata() {
-			try {
-				const [langRes, frameRes, depRes, tagsRes] = await Promise.all([
-					supabase.from('languages').select('id, name'),
-					supabase.from('frameworks').select('id, name'),
-					supabase.from('dependencies').select('id, name'),
-					supabase.from('tags').select('id, name'),
-				]);
+		if (!id) return;
 
-				if (langRes.data) {
-					setLanguagesList(langRes.data);
-					if (langRes.data.length > 0)
-						setSelectedLanguageId(langRes.data[0].id);
-				}
-				if (frameRes.data) {
-					setFrameworksList(frameRes.data);
-					if (frameRes.data.length > 0)
-						setSelectedFrameworkId(frameRes.data[0].id);
-				}
+		async function fetchSnippetData() {
+			setLoading(true);
+			try {
+				const [langRes, frameRes, depRes, tagsRes, snippetRes, activeDepsRes] =
+					await Promise.all([
+						supabase.from('languages').select('id, name'),
+						supabase.from('frameworks').select('id, name'),
+						supabase.from('dependencies').select('id, name'),
+						supabase.from('tags').select('id, name'),
+						supabase.from('snippets').select('*').eq('id', id).single(),
+						supabase
+							.from('snippet_dependencies')
+							.select('dependency_id')
+							.eq('snippet_id', id),
+					]);
+
+				if (langRes.data) setLanguagesList(langRes.data);
+				if (frameRes.data) setFrameworksList(frameRes.data);
 				if (depRes.data) setDependenciesList(depRes.data);
 				if (tagsRes.data) setTagsList(tagsRes.data);
+
+				if (snippetRes.data) {
+					const snip = snippetRes.data;
+					setTitle(snip.title || '');
+					setCodeFilename(snip.code_filename || '');
+					setDescription(snip.description || '');
+					setCode(snip.code || '');
+					setReadme(snip.readme || '');
+					setSelectedLanguageId(snip.language_id || '');
+					setSelectedFrameworkId(snip.framework_id || '');
+					setSelectedTags(snip.tags || []);
+				}
+
+				if (activeDepsRes.data) {
+					const activeIds = activeDepsRes.data.map(item => item.dependency_id);
+					setSelectedDependencyIds(activeIds);
+				}
 			} catch (err) {
-				console.error('Ошибка загрузки метаданных:', err);
+				console.error('Error loading snippet:', err);
+				alert('Failed to load snippet data');
+			} finally {
+				setLoading(false);
 			}
 		}
 
-		fetchMetadata();
-	}, []);
+		fetchSnippetData();
+	}, [id]);
 
-	// Переключение зависимости
-	const toggleDependency = (id: string) => {
-		if (selectedDependencyIds.includes(id)) {
-			setSelectedDependencyIds(
-				selectedDependencyIds.filter(depId => depId !== id),
-			);
-		} else {
-			setSelectedDependencyIds([...selectedDependencyIds, id]);
+	// Tag Handlers
+	const handleAddTag = (tagToAdd: string) => {
+		const cleanTag = tagToAdd.trim().replace(/^#/, '');
+		if (!cleanTag) return;
+		if (!selectedTags.includes(cleanTag)) {
+			setSelectedTags(prev => [...prev, cleanTag]);
 		}
-	};
-
-	// Добавление тега из БД или вручную
-	const handleAddTag = (tagName: string) => {
-		const cleanTag = tagName.trim();
-		if (cleanTag && !selectedTags.includes(cleanTag)) {
-			setSelectedTags([...selectedTags, cleanTag]);
-			setTagInput('');
-		}
+		setTagInput('');
 	};
 
 	const handleRemoveTag = (tagToRemove: string) => {
-		setSelectedTags(selectedTags.filter(t => t !== tagToRemove));
+		setSelectedTags(prev => prev.filter(t => t !== tagToRemove));
 	};
 
-	// Создание новой зависимости в БД и автоматический выбор
-	const handleAddCustomDependency = async () => {
-		const name = customDepName.trim();
-		if (!name) return;
+	// Dependency Handlers
+	const toggleDependency = (depId: string) => {
+		setSelectedDependencyIds(prev =>
+			prev.includes(depId) ? prev.filter(id => id !== depId) : [...prev, depId],
+		);
+	};
 
-		// Сформируем команду установки по умолчанию, если пользователь не ввёл свою
-		const installCommand = customDepCommand.trim() || `npm i ${name}`;
+	const handleAddCustomDependency = async () => {
+		if (!customDepName.trim()) return;
 
 		try {
-			// 1. Вставляем новую зависимость в таблицу 'dependencies'
-			const { data: newDep, error } = await supabase
+			// Insert into 'dependencies' table
+			const { data, error } = await supabase
 				.from('dependencies')
-				.insert([
-					{
-						name: name,
-						install_command: installCommand,
-						color: '#6366F1', // Дефолтный цвет плашки
-						bg: '#141638',
-						border_color: '#292d70',
-					},
-				])
-				.select()
+				.insert({
+					name: customDepName.trim(),
+					install_command: customDepCommand.trim() || null,
+				})
+				.select('id, name')
 				.single();
 
-			if (error) {
-				console.error('Ошибка добавления зависимости:', error);
-				alert(`Ошибка при создании зависимости: ${error.message}`);
-				return;
-			}
+			if (error) throw error;
 
-			if (newDep) {
-				// 2. Добавляем новую зависимость в локальный список всех зависимостей
-				setDependenciesList(prev => [...prev, newDep]);
-
-				// 3. Сразу добавляем её ID в выбранные
-				setSelectedDependencyIds(prev => [...prev, newDep.id]);
-
-				// 4. Очищаем форму ввода
+			if (data) {
+				setDependenciesList(prev => [...prev, data]);
+				setSelectedDependencyIds(prev => [...prev, data.id]);
 				setCustomDepName('');
 				setCustomDepCommand('');
 				setIsAddingCustomDep(false);
 			}
 		} catch (err) {
-			console.error('Ошибка:', err);
+			console.error('Error adding custom dependency:', err);
+			alert('Failed to add custom dependency');
 		}
 	};
 
-	// Отправка формы в Supabase
-	const handleSubmit = async () => {
-		if (!title.trim() || !code.trim()) {
-			alert('Заполните название и код!');
-			return;
-		}
+	// 2. SAVE UPDATES
+	const handleUpdate = async () => {
+		if (!title.trim() || !code.trim() || !id) return;
 
 		setLoading(true);
 
 		try {
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-
-			if (!user) {
-				alert('Вы должны быть авторизованы!');
-				return;
-			}
-
-			// 1. Создаем сам сниппет (включая массив строк тегов tags text[])
 			const snippetPayload = {
 				title,
 				code,
 				description,
 				readme,
-				code_filename: codeFilename || 'snippet.ts',
+				code_filename: codeFilename,
 				tags: selectedTags,
 				language_id: selectedLanguageId || null,
 				framework_id: selectedFrameworkId || null,
-				user_id: user.id,
+				updated_at: new Date().toISOString(),
 			};
 
-			const { data: snippet, error: snippetError } = await supabase
+			const { error: snippetError } = await supabase
 				.from('snippets')
-				.insert([snippetPayload])
-				.select()
-				.single();
+				.update(snippetPayload)
+				.eq('id', id);
 
 			if (snippetError) throw snippetError;
 
-			// 2. Записываем зависимости в таблицу snippet_dependencies
-			if (selectedDependencyIds.length > 0 && snippet) {
+			// Delete old dependencies relation
+			const { error: deleteError } = await supabase
+				.from('snippet_dependencies')
+				.delete()
+				.eq('snippet_id', id);
+
+			if (deleteError) throw deleteError;
+
+			// Insert new dependencies relation
+			if (selectedDependencyIds.length > 0) {
 				const dependenciesPayload = selectedDependencyIds.map(depId => ({
-					snippet_id: snippet.id,
+					snippet_id: id,
 					dependency_id: depId,
 				}));
 
-				const { error: depError } = await supabase
+				const { error: insertDepError } = await supabase
 					.from('snippet_dependencies')
 					.insert(dependenciesPayload);
 
-				if (depError) {
-					console.error('Ошибка записи зависимостей:', depError);
-				}
+				if (insertDepError) throw insertDepError;
 			}
 
-			navigate(`/snippet/${snippet.id}`);
-		} catch (err) {
-			console.error('Ошибка сохранения:', err);
-			alert(`Ошибка Supabase [${err || 'Error'}]: ${err}`);
+			navigate(`/snippet/${id}`);
+		} catch (error) {
+			console.error('Update error:', error);
+			alert(`Supabase error: ${error}`);
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const currentLangName =
-		languagesList.find(l => l.id === selectedLanguageId)?.name || 'TypeScript';
+	if (loading) {
+		return <div className='text-white p-8'>Loading snippet data...</div>;
+	}
 
 	return (
 		<div className='min-h-screen text-slate-200 font-sans p-4 sm:p-8 selection:bg-[#2dd4bf]/30'>
 			{/* TOP BAR */}
 			<div className='mx-auto flex items-center justify-between mb-6'>
 				<button
-					onClick={() => navigate(-1)}
+					onClick={() => navigate('/profile')}
 					className='flex items-center gap-2 text-slate-400 hover:text-white transition-colors cursor-pointer text-sm font-medium'
 				>
 					<ArrowLeft className='w-4 h-4' />
@@ -235,12 +230,12 @@ export const CreateSnippet = () => {
 				</button>
 
 				<button
-					onClick={handleSubmit}
+					onClick={handleUpdate}
 					disabled={loading}
 					className='flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-extrabold bg-[#2dd4bf] text-[#090f22] hover:bg-[#5eead4] transition-all cursor-pointer shadow-lg shadow-[#2dd4bf]/10 disabled:opacity-50'
 				>
 					<CheckCircle2 className='w-4 h-4' />
-					<span>{loading ? 'Publishing...' : 'Publish Snippet'}</span>
+					<span>{loading ? 'Updating...' : 'Update Snippet'}</span>
 				</button>
 			</div>
 
@@ -253,22 +248,21 @@ export const CreateSnippet = () => {
 					</div>
 					<div>
 						<h1 className='text-2xl sm:text-3xl font-black text-white tracking-tight'>
-							Create New Snippet
+							Edit Snippet
 						</h1>
 						<p className='text-slate-400 text-sm sm:text-base mt-1 leading-relaxed'>
-							Publish production-ready snippets with full control over syntax,
-							tags, and documentation.
+							Update your snippet with the latest changes and improvements.
 						</p>
 					</div>
 				</div>
 
 				<div className='grid grid-cols-1 lg:grid-cols-12 gap-8'>
-					{/* LEFT COLUMN (8 cols) */}
+					{/* LEFT COLUMN */}
 					<div className='lg:col-span-7 xl:col-span-8 space-y-6'>
 						{/* Title & File Name */}
 						<div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
 							<div className='space-y-1.5'>
-								<label className='text-ыь font-bold text-slate-300 tracking-wider'>
+								<label className='text-sm font-bold text-slate-300 tracking-wider'>
 									Title <span className='text-rose-400'>*</span>
 								</label>
 								<input
@@ -281,7 +275,7 @@ export const CreateSnippet = () => {
 							</div>
 
 							<div className='space-y-1.5'>
-								<label className='text-ыь font-bold text-slate-300 tracking-wider'>
+								<label className='text-sm font-bold text-slate-300 tracking-wider'>
 									File Name (`code_filename`)
 								</label>
 								<input
@@ -296,7 +290,7 @@ export const CreateSnippet = () => {
 
 						{/* Short Description */}
 						<div className='space-y-1.5'>
-							<label className='text-ыь font-bold text-slate-300 tracking-wider'>
+							<label className='text-sm font-bold text-slate-300 tracking-wider'>
 								Description
 							</label>
 							<textarea
@@ -319,8 +313,9 @@ export const CreateSnippet = () => {
 								<select
 									value={selectedLanguageId}
 									onChange={e => setSelectedLanguageId(e.target.value)}
-									className='bg-[#090f22] border border-[#1b2333] text-[#2dd4bf] rounded-xl px-3 py-1.5 text-ыь font-bold focus:outline-none cursor-pointer'
+									className='bg-[#090f22] border border-[#1b2333] text-[#2dd4bf] rounded-xl px-3 py-1.5 text-sm font-bold focus:outline-none cursor-pointer'
 								>
+									<option value=''>Select Language</option>
 									{languagesList.map(lang => (
 										<option
 											key={lang.id}
@@ -342,19 +337,20 @@ export const CreateSnippet = () => {
 						</div>
 					</div>
 
-					{/* RIGHT COLUMN / SIDEBAR (4 cols) */}
+					{/* RIGHT COLUMN / SIDEBAR */}
 					<div className='lg:col-span-5 xl:col-span-4 space-y-6 lg:border-l lg:border-[#1b2333] lg:pl-8'>
 						{/* Framework Select */}
 						<div className='space-y-2'>
-							<label className='text-ыь font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
+							<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
 								<Layers className='w-3.5 h-3.5 text-[#2dd4bf]' />
 								Framework
 							</label>
 							<select
 								value={selectedFrameworkId}
 								onChange={e => setSelectedFrameworkId(e.target.value)}
-								className='w-full bg-[#090f22] border border-[#1b2333] text-white rounded-xl px-3 py-2.5 text-ыь font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
+								className='w-full bg-[#090f22] border border-[#1b2333] text-white rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
 							>
+								<option value=''>Select Framework</option>
 								{frameworksList.map(fw => (
 									<option
 										key={fw.id}
@@ -367,14 +363,13 @@ export const CreateSnippet = () => {
 							</select>
 						</div>
 
-						{/* TAGS SELECT (ИЗ ТАБЛИЦЫ tags + РУЧНОЙ ВВОД) */}
+						{/* TAGS SELECT */}
 						<div className='space-y-2.5'>
-							<label className='text-ыь font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
+							<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
 								<Tag className='w-3.5 h-3.5 text-[#2dd4bf]' />
 								Tags
 							</label>
 
-							{/* Выбор из таблицы tags */}
 							<select
 								onChange={e => {
 									if (e.target.value) {
@@ -382,7 +377,7 @@ export const CreateSnippet = () => {
 										e.target.value = '';
 									}
 								}}
-								className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-ыь font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
+								className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
 							>
 								<option value=''>+ Select tag from database...</option>
 								{tagsList.map(tag => (
@@ -396,7 +391,6 @@ export const CreateSnippet = () => {
 								))}
 							</select>
 
-							{/* Ручной ввод нового тега */}
 							<div className='flex gap-2 pt-1'>
 								<input
 									type='text'
@@ -407,7 +401,7 @@ export const CreateSnippet = () => {
 										(e.preventDefault(), handleAddTag(tagInput))
 									}
 									placeholder='Or type custom tag...'
-									className='flex-1 bg-[#090f22] border border-[#1b2333] rounded-xl px-3 py-2 text-ыь text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
+									className='flex-1 bg-[#090f22] border border-[#1b2333] rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
 								/>
 								<button
 									type='button'
@@ -418,14 +412,13 @@ export const CreateSnippet = () => {
 								</button>
 							</div>
 
-							{/* Список выбранных тегов */}
 							<div className='flex flex-wrap gap-2 pt-1'>
 								{selectedTags.map(tag => (
 									<span
 										key={tag}
-										className='flex items-center gap-1.5 text-ыь font-mono font-bold px-3 py-1 rounded-xl bg-[#092227] text-[#2dd4bf] border border-[#0d4247]'
+										className='flex items-center gap-1.5 text-sm font-mono font-bold px-3 py-1 rounded-xl bg-[#092227] text-[#2dd4bf] border border-[#0d4247]'
 									>
-										{tag.startsWith('#') ? tag : `#${tag}`}
+										#{tag}
 										<X
 											className='w-3.5 h-3.5 hover:text-rose-400 cursor-pointer'
 											onClick={() => handleRemoveTag(tag)}
@@ -435,15 +428,14 @@ export const CreateSnippet = () => {
 							</div>
 						</div>
 
-						{/* DEPENDENCIES SELECT + CUSTOM ADD */}
+						{/* DEPENDENCIES SELECT */}
 						<div className='space-y-2.5'>
 							<div className='flex items-center justify-between'>
-								<label className='text-ыь font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
+								<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
 									<Box className='w-3.5 h-3.5 text-[#2dd4bf]' />
 									Dependencies
 								</label>
 
-								{/* Кнопка переключения режимов */}
 								<button
 									type='button'
 									onClick={() => setIsAddingCustomDep(!isAddingCustomDep)}
@@ -454,7 +446,6 @@ export const CreateSnippet = () => {
 							</div>
 
 							{!isAddingCustomDep ? (
-								/* Выбор из существующей базы */
 								<select
 									onChange={e => {
 										if (e.target.value) {
@@ -462,7 +453,7 @@ export const CreateSnippet = () => {
 											e.target.value = '';
 										}
 									}}
-									className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-ыь font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
+									className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
 								>
 									<option value=''>Select dependency from database...</option>
 									{dependenciesList.map(dep => (
@@ -476,34 +467,33 @@ export const CreateSnippet = () => {
 									))}
 								</select>
 							) : (
-								/* Форма для добавления кастомной зависимости */
 								<div className='space-y-2 p-3 bg-[#090f22] border border-[#1b2333] rounded-xl'>
 									<input
 										type='text'
 										value={customDepName}
 										onChange={e => setCustomDepName(e.target.value)}
 										placeholder='Package name (e.g. lodash)'
-										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-ыь text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
+										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
 									/>
 									<input
 										type='text'
 										value={customDepCommand}
 										onChange={e => setCustomDepCommand(e.target.value)}
 										placeholder='Install cmd (optional: npm i lodash)'
-										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-ыь text-white font-mono placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
+										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
 									/>
 									<div className='flex justify-end gap-2 pt-1'>
 										<button
 											type='button'
 											onClick={() => setIsAddingCustomDep(false)}
-											className='px-2.5 py-1 text-ыь text-slate-400 hover:text-white cursor-pointer'
+											className='px-2.5 py-1 text-sm text-slate-400 hover:text-white cursor-pointer'
 										>
 											Cancel
 										</button>
 										<button
 											type='button'
 											onClick={handleAddCustomDependency}
-											className='px-3 py-1 bg-[#2dd4bf] text-[#090f22] font-bold text-ыь rounded-lg hover:bg-[#5eead4] transition-all cursor-pointer'
+											className='px-3 py-1 bg-[#2dd4bf] text-[#090f22] font-bold text-sm rounded-lg hover:bg-[#5eead4] transition-all cursor-pointer'
 										>
 											Add Package
 										</button>
@@ -511,7 +501,6 @@ export const CreateSnippet = () => {
 								</div>
 							)}
 
-							{/* Список выбранных зависимостей */}
 							<div className='flex flex-wrap gap-2 pt-1'>
 								{selectedDependencyIds.map(depId => {
 									const dep = dependenciesList.find(d => d.id === depId);
@@ -519,7 +508,7 @@ export const CreateSnippet = () => {
 									return (
 										<span
 											key={dep.id}
-											className='flex items-center gap-1.5 text-ыь font-mono px-2.5 py-1 rounded-lg bg-[#162032] text-[#2dd4bf] border border-[#222f47]'
+											className='flex items-center gap-1.5 text-sm font-mono px-2.5 py-1 rounded-lg bg-[#162032] text-[#2dd4bf] border border-[#222f47]'
 										>
 											{dep.name}
 											<X
@@ -534,7 +523,7 @@ export const CreateSnippet = () => {
 
 						{/* README / Usage Documentation */}
 						<div className='space-y-2 pt-2'>
-							<label className='text-ыь font-bold text-slate-300 tracking-wider flex items-center gap-2'>
+							<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-2'>
 								<FileText className='w-4 h-4 text-[#2dd4bf]' />
 								How To Use?
 							</label>
@@ -542,8 +531,8 @@ export const CreateSnippet = () => {
 								rows={4}
 								value={readme}
 								onChange={e => setReadme(e.target.value)}
-								placeholder='## Installation&#10;Paste hook into your `hooks/` directory and wrap routes with SessionProvider...'
-								className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl p-3.5 text-white font-mono text-ыь leading-relaxed placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all resize-none'
+								placeholder='## Installation&#10;Paste hook into your `hooks/` directory...'
+								className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl p-3.5 text-white font-mono text-sm leading-relaxed placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all resize-none'
 							/>
 						</div>
 					</div>
@@ -551,4 +540,4 @@ export const CreateSnippet = () => {
 			</div>
 		</div>
 	);
-}
+};

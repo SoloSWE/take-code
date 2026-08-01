@@ -1,6 +1,7 @@
 import { Edit2, Trash2, Star } from 'lucide-react';
 import type { snippetCard } from './Showcase';
 import { Language } from '../ui/Language';
+import { Link } from 'react-router-dom';
 
 interface UserSnippetCardProps {
 	snippet: snippetCard;
@@ -19,7 +20,13 @@ export const UserSnippetCard = ({
 			<div>
 				<div className='flex items-center justify-between mb-4'>
 					{/* Бейдж языка */}
-                    <Language language={snippet.languages?.name} icon={snippet.languages?.icon} background={snippet.languages?.background} color={snippet.languages?.color} borderColor={snippet.languages?.borderColor} />
+					<Language
+						language={snippet.languages?.name}
+						icon={snippet.languages?.icon}
+						background={snippet.languages?.background}
+						color={snippet.languages?.color}
+						borderColor={snippet.languages?.borderColor}
+					/>
 
 					{/* Звёзды */}
 					<div className='flex items-center gap-1.5 text-[#94a3b8] font-semibold bg-[#0c1321] px-2.5 py-1 rounded-xl border border-[#19202f]'>
@@ -53,13 +60,15 @@ export const UserSnippetCard = ({
 
 				<div className='flex items-center gap-2'>
 					{/* Кнопка Редактировать */}
-					<button
-						onClick={() => onEdit(snippet.id)}
-						className='flex items-center gap-1.5 text-xs font-bold text-[#CBD5E1] bg-[#151a29] border border-[#2a3040] rounded-xl px-3.5 py-2 cursor-pointer transition-all hover:bg-[#1c2336] hover:text-white hover:border-[#3b4760]'
-					>
-						<Edit2 className='w-3.5 h-3.5 text-[#38BDF8]' />
-						<span>Edit</span>
-					</button>
+					<Link to={`/editSnippet/${snippet.id}`}>
+						<button
+							onClick={() => onEdit(snippet.id)}
+							className='flex items-center gap-1.5 text-xs font-bold text-[#CBD5E1] bg-[#151a29] border border-[#2a3040] rounded-xl px-3.5 py-2 cursor-pointer transition-all hover:bg-[#1c2336] hover:text-white hover:border-[#3b4760]'
+						>
+							<Edit2 className='w-3.5 h-3.5 text-[#38BDF8]' />
+							<button>Edit</button>
+						</button>
+					</Link>
 
 					{/* Кнопка Удалить */}
 					<button
