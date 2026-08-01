@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../utils/supabase';
 
-import { Bookmark, Code2, FolderClosed } from 'lucide-react';
+import { Bookmark, Code2 } from 'lucide-react';
 
 import { ProfileAbout } from '../components/features/ProfileAbout';
 import { ProfileSettings } from '../components/features/ProfileSettings';
@@ -39,6 +39,8 @@ export const Profile = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 	const [featuredSnippets, setFeaturedSnippets] = useState<snippetCard[] | null>(null);
+	const [snippetsCount, setSnippetsCount] = useState<number>(0);
+	const [snippetsCountCopy, setSnippetsCountCopy] = useState<number>(0);
 
 	const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 	const [selectedCategory, setSelectedCategory] =
@@ -89,14 +91,22 @@ export const Profile = () => {
 		async function fetchFeaturedSnippets() {
 			setLoading(true);
 			try {
-				const { data } = await supabase
-					.from('snippets')
-					.select('*, profiles(avatar_url, tag, username)')
-					.order('stars_count', { ascending: false })
-					.eq('user_id', user?.id)
-					.limit(2);
+				const [featuredSnippets, snippetsCount] = await Promise.all([
+					supabase
+						.from('snippets')
+						.select('*, profiles(avatar_url, tag, username)')
+						.order('stars_count', { ascending: false })
+						.eq('user_id', user?.id)
+						.limit(2),
+					supabase
+						.from('snippets')
+						.select('*, copied_count')
+						.eq('user_id', user?.id),
+				]);
 
-				setFeaturedSnippets(data);
+				setFeaturedSnippets(featuredSnippets.data || []);
+				setSnippetsCount(snippetsCount.data?.length || 0);
+				setSnippetsCountCopy(snippetsCount.data?.reduce((acc, snippet) => acc + (snippet.copied_count || 0), 0) || 0);
 			} catch (error) {
 				console.log(error);
 			} finally {
@@ -122,6 +132,8 @@ export const Profile = () => {
 						<ProfileAbout
 							userProfile={userProfile}
 							onOpenSettings={() => setIsSettingsOpen(true)}
+							totalCreatedSnippets={snippetsCount}
+							snippetsCountCopy={snippetsCountCopy}
 						/>
 					)}
 				</div>
@@ -153,17 +165,6 @@ export const Profile = () => {
 								My Snippets
 							</li>
 							<li
-								onClick={() => handleSelectedCategory('Collections')}
-								className={cn(
-									'flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer',
-									selectedCategory === 'Collections' &&
-										'bg-[#252d3c] text-white',
-								)}
-							>
-								<FolderClosed size={20} />
-								Collections
-							</li>
-							<li
 								onClick={() => handleSelectedCategory('Saved / Bookmarks')}
 								className={cn(
 									'flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer',
@@ -178,7 +179,7 @@ export const Profile = () => {
 					</div>
 					<div className='flex items-center gap-4'>
 						<p className='text-[#64748b] font-mono text-[16px]'>
-							128 published
+							{snippetsCount} published
 						</p>
 						<Link to={'/createSnippet'}>
 							<button className='w-full h-auto px-5 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>

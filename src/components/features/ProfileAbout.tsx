@@ -13,9 +13,11 @@ import type { SocialMedia, UserProfile } from '../../pages/Profile';
 interface ProfileAboutProps {
 	userProfile: UserProfile | null;
 	onOpenSettings: () => void;
+	totalCreatedSnippets: number;
+	snippetsCountCopy: number;
 }
 
-export const ProfileAbout = ({ userProfile, onOpenSettings }: ProfileAboutProps) => {
+export const ProfileAbout = ({ userProfile, onOpenSettings, totalCreatedSnippets, snippetsCountCopy }: ProfileAboutProps) => {
 	const profileRef = useRef(null);
 	const isHovering = useHover(profileRef);
 
@@ -105,12 +107,12 @@ export const ProfileAbout = ({ userProfile, onOpenSettings }: ProfileAboutProps)
 			</div>
 			<div className='w-full h-auto flex items-center gap-4 mt-2'>
 				<div className='w-full bg-[#0b1c2e] border border-[#12354f] rounded-2xl px-4 py-4'>
-					<h3 className='text-[#38BDF8] text-3xl font-extrabold'>128</h3>
-					<p className='text-[#94A3B8] font-medium'>snippets shared</p>
+					<h3 className='text-[#38BDF8] text-3xl font-extrabold'>{totalCreatedSnippets}</h3>
+					<p className='text-[#94A3B8] font-medium'>created snippets</p>
 				</div>
 				<div className='w-full bg-[#0b1e27] border border-[#113b3a] rounded-2xl px-4 py-4'>
-					<h3 className='text-[#34D399] text-3xl font-extrabold'>24.7k</h3>
-					<p className='text-[#94A3B8] font-medium'>upvotes received</p>
+					<h3 className='text-[#34D399] text-3xl font-extrabold'>{snippetsCountCopy.toLocaleString()}</h3>
+					<p className='text-[#94A3B8] font-medium'>upvotes copies</p>
 				</div>
 			</div>
 		</div>
