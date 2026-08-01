@@ -19,6 +19,7 @@ interface snippetCard {
 	framework_id?: string;
 	title: string;
 	description: string;
+	readme: string;
 	code_filename: string;
 	code: string;
 	tags: string[];
@@ -495,7 +496,7 @@ export const Snippet = () => {
 					<div className='p-5 bg-[#0f172a] border border-[#1e2639] rounded-3xl text-white'>
 						<h3 className='font-black text-xl'>Readme</h3>
 						<p className='text-[#94A3B8] mt-3'>
-							Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+							{snippet?.readme || 'No readme provided'}
 						</p>
 					</div>
 					<div className='p-5 bg-[#0f172a] border border-[#1e2639] rounded-3xl text-white'>

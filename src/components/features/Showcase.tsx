@@ -46,6 +46,7 @@ export interface snippetCard {
 	framework_id?: string;
 	title: string;
 	description: string;
+	readme: string;
 	code: string;
 	tags: string[];
 	stars_count: number;
@@ -65,6 +66,7 @@ export interface snippetCard {
 		avatar_url: string;
 	} | null;
 	created_at: string | null;
+	updated_at: string | null;
 }
 
 export const Showcase = () => {

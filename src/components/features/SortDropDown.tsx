@@ -55,7 +55,7 @@ export const SortDropdown = ({ filtersList, selectedFilter, setSelectedFilter }:
 
 			{/* Выпадающий список */}
 			{isOpen && (
-				<ul className='absolute left-0 right-0 mt-2 bg-[#060b1b] border border-[#22293d] rounded-xl py-1.5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-1 duration-150'>
+				<ul className='absolute left-0 right-0 mt-2 bg-[#060b1b] border border-[#22293d] rounded-xl py-1.5 shadow-2xl z-100 animate-in fade-in slide-in-from-top-1 duration-150'>
 					{filtersList.map((item, index) => {
 						const isSelected = item === selectedFilter;
 						return (

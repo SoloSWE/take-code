@@ -26,7 +26,7 @@ export const AuntatificatedUserMenu = ({ user }: User) => {
 	useCloseDropdown(menuRef, active, setActive);
 
 	return (
-		<div ref={menuRef} className='relative'>
+		<div ref={menuRef} className='relative z-100'>
 			<button
 				className='flex items-center gap-2 cursor-pointer'
 				onClick={() => setActive(prev => !prev)}

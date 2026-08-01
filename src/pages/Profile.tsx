@@ -36,7 +36,7 @@ export interface UserProfile {
 
 export const Profile = () => {
 	const [user, setUser] = useState<User | null>(null);
-	const [loading, setLoading] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 	const [featuredSnippets, setFeaturedSnippets] = useState<snippetCard[] | null>(null);
 
@@ -177,11 +177,11 @@ export const Profile = () => {
 						</ul>
 					</div>
 					<div className='flex items-center gap-4'>
-						<p className='w-50 text-[#64748b] font-mono text-[16px]'>
+						<p className='text-[#64748b] font-mono text-[16px]'>
 							128 published
 						</p>
 						<Link to={'/createSnippet'}>
-							<button className='w-full h-auto px-2 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>
+							<button className='w-full h-auto px-5 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>
 								New Snippet
 							</button>
 						</Link>
