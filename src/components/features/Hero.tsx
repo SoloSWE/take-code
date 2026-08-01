@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 import { codeToHtml } from 'shiki'
 
@@ -15,6 +16,8 @@ const snippetCode = `export function copySnippet(source: string) {
 	}`;
 
 export const Hero = () => {
+	const navigate = useNavigate();
+
     const [code, setCode] = useState<string>('');
     const [copied, setCopied] = useState<boolean>(false);
 	const [searchQuery, setSearchQuery] = useState<string>('');
@@ -53,8 +56,7 @@ export const Hero = () => {
 
 	const handleSearchSubmit = () => {
 		if (!searchQuery.trim()) return;
-		console.log(`Searching for: ${searchQuery}`);
-		// Тут будет логика перехода или фильтрации
+		navigate(`/exploreHub?search=${encodeURIComponent(searchQuery.trim())}`);
 	};
 
 	return (

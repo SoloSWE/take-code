@@ -80,7 +80,7 @@ export const ExploreHub = () => {
 	const [snippetsLoading, setSnippetsLoading] = useState<boolean>(true);
 	const [totalCount, setTotalCount] = useState<number>(0);
 
-	const pageSize = 8;
+	const pageSize = 6;
 	const totalPages = Math.ceil(totalCount / pageSize);
 
 	// 4. Загрузка справочников из БД
@@ -196,7 +196,7 @@ export const ExploreHub = () => {
                         )
                     `,
 					{ count: 'exact' },
-				);
+				)
 
 				if (selectedLanguage) query = query.eq('language_id', selectedLanguage);
 				if (selectedFramework)
