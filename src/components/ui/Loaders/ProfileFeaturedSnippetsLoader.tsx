@@ -12,7 +12,7 @@ export const ProfileFeaturedSnippetsLoader = () => {
 				{[...Array(2)].map((_, index) => (
 					<div
 						key={index}
-						className='w-full bg-gray-800/80 animate-pulse rounded-xl sm:rounded-2xl p-4 flex flex-col justify-between gap-3 min-h-[120px]'
+						className='w-full bg-gray-800/80 animate-pulse rounded-xl sm:rounded-2xl p-4 flex flex-col justify-between gap-3 min-h-30'
 					>
 						<div className='flex justify-between items-center gap-2'>
 							<div className='w-20 h-5 bg-gray-700/80 rounded-lg' />
