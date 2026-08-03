@@ -168,7 +168,7 @@ export const Header = () => {
 
 	return (
 		<header className='sticky top-0 z-50 w-full bg-[#0f172a] border-b border-slate-800 px-4 sm:px-6 lg:px-10 py-3.5 transition-all shadow-lg'>
-			<div className='max-w-7xl mx-auto flex items-center justify-between gap-4'>
+			<div className='mx-auto flex items-center justify-between gap-4'>
 				{/* Logo */}
 				<Link to={'/'} className='flex items-center gap-2.5 shrink-0 z-10'>
 					<div className='flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] shadow-[0px_0px_15px_0px_rgba(56,189,248,0.25)]'>
