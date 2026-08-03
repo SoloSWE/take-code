@@ -156,7 +156,7 @@ export const Profile = () => {
 
 				{/* Правая колонка (Featured Snippets) */}
 				<div className='w-full lg:w-1/2 flex flex-col'>
-					<div className='w-full h-full min-h-[300px] sm:min-h-[360px] bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 hover:border-[#252e44] transition-colors overflow-hidden'>
+					<div className='w-full h-full min-h-75 sm:min-h-90 bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 hover:border-[#252e44] transition-colors overflow-hidden'>
 						{loading ? (
 							<ProfileFeaturedSnippetsLoader />
 						) : (
