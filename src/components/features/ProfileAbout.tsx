@@ -26,7 +26,10 @@ export const ProfileAbout = ({
 	const isHovering = useHover(profileRef);
 
 	return (
-		<div ref={profileRef} className='group flex flex-col gap-4 sm:gap-5'>
+		<div
+			ref={profileRef}
+			className='group flex-1 h-full flex flex-col gap-4 sm:gap-5'
+		>
 			{/* Верхний блок: Аватар, Данные и Настройки */}
 			<div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
 				<div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 min-w-0 flex-1 w-full'>
@@ -143,8 +146,8 @@ export const ProfileAbout = ({
 				</ul>
 			</div>
 
-			{/* Статистика */}
-			<div className='w-full flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-1 sm:mt-2'>
+			{/* Статистика – прижата к низу */}
+			<div className='w-full flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-auto'>
 				<div className='w-full bg-[#0b1c2e] border border-[#12354f] rounded-2xl p-3.5 sm:p-4'>
 					<h3 className='text-[#38BDF8] text-2xl sm:text-3xl font-extrabold'>
 						{totalCreatedSnippets}

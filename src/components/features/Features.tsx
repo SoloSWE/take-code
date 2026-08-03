@@ -135,7 +135,7 @@ export const Features = () => {
 			</div> */}
 
 			{/* 1. Главный контейнер (items-stretch заставляет левую и правую часть быть одной высоты) */}
-			<div className='flex flex-col lg:flex-row items-stretch gap-6 mt-15 max-w-7xl mx-10'>
+			<div className='flex flex-col lg:flex-row items-stretch gap-6 mt-15   mx-10'>
 				{/* ЛЕВАЯ КАРТОЧКА (Растягивается на всю высоту соседа) */}
 				<div className='w-full lg:w-1/3 flex flex-col bg-linear-to-b from-[#111c31f5] to-[#0b1220f5] rounded-3xl border border-[#94a3b83e] px-6 py-6 transition-all duration-300 ease-in-out hover:border-[#42454e] hover:ring-[#42454e]'>
 					{/* Твой контент (иконка, языки, текст) */}

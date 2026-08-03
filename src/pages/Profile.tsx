@@ -6,16 +6,16 @@ import { supabase } from '../utils/supabase';
 import { Bookmark, Code2 } from 'lucide-react';
 
 import { ProfileAbout } from '../components/features/ProfileAbout';
-import { ProfileSettings } from '../components/features/ProfileSettings';
 import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
+import { ProfileSettings } from '../components/features/ProfileSettings';
 import type { snippetCard } from '../components/features/Showcase';
 
-import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
-import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
-import { cn } from '../utils/cn';
-import { UserSnippetsList } from '../components/features/UserSnippetsList';
 import { Link } from 'react-router-dom';
 import { UserBookmarkedSnippetsList } from '../components/features/UserBookmarkedSnippetsList';
+import { UserSnippetsList } from '../components/features/UserSnippetsList';
+import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
+import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
+import { cn } from '../utils/cn';
 
 export interface SocialMedia {
 	id: number;
@@ -137,26 +137,28 @@ export const Profile = () => {
 	};
 
 	return (
-		<section className='w-full max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-10'>
+		<section className='w-full mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-10'>
 			{/* Верхний блок: Профиль и Популярные сниппеты */}
-			<div className='flex flex-col lg:flex-row gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-3xl sm:rounded-4xl p-3 sm:p-4.5'>
+			<div className='flex flex-col lg:flex-row gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-3xl sm:rounded-4xl p-3 sm:p-4.5 items-stretch'>
 				{/* Левая колонка (Профиль) */}
-				<div className='w-full lg:w-1/2 bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl flex flex-col gap-5 p-5 sm:p-7 lg:p-9 hover:border-[#252e44] transition-colors'>
-					{loading ? (
-						<ProflieAboutLoader />
-					) : (
-						<ProfileAbout
-							userProfile={userProfile}
-							onOpenSettings={() => setIsSettingsOpen(true)}
-							totalCreatedSnippets={snippetsCount}
-							snippetsCountCopy={snippetsCountCopy}
-						/>
-					)}
+				<div className='w-full lg:w-1/2 flex flex-col'>
+					<div className='flex-1 flex flex-col bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-9 hover:border-[#252e44] transition-colors'>
+						{loading ? (
+							<ProflieAboutLoader />
+						) : (
+							<ProfileAbout
+								userProfile={userProfile}
+								onOpenSettings={() => setIsSettingsOpen(true)}
+								totalCreatedSnippets={snippetsCount}
+								snippetsCountCopy={snippetsCountCopy}
+							/>
+						)}
+					</div>
 				</div>
 
 				{/* Правая колонка (Featured Snippets) */}
-				<div className='w-full lg:w-1/2 flex flex-col'>
-					<div className='w-full h-full min-h-75 sm:min-h-90 bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 hover:border-[#252e44] transition-colors overflow-hidden'>
+				<div className='w-full lg:w-1/2 flex flex-col flex-1'>
+					<div className='w-full flex-1 flex flex-col bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 hover:border-[#252e44] transition-colors overflow-hidden'>
 						{loading ? (
 							<ProfileFeaturedSnippetsLoader />
 						) : (
@@ -171,7 +173,7 @@ export const Profile = () => {
 				<div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4'>
 					{/* Табы */}
 					<div className='flex w-full sm:w-auto'>
-						<ul className='flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto'>
+						<ul className='flex xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto'>
 							<li
 								onClick={() => handleSelectedCategory('My Snippets')}
 								className={cn(

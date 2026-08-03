@@ -8,102 +8,95 @@ type Props = {
 
 export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 	return (
-		<div className='flex flex-col h-full w-full justify-between gap-3 sm:gap-4'>
+		<div className='flex flex-col w-full gap-4 flex-1 h-full'>
 			{/* Заголовок */}
-			<div className='flex items-center gap-2.5 sm:gap-3 shrink-0'>
-				<div className='p-2 sm:p-2.5 bg-[#f8fafc05] border border-[#1e2533] rounded-xl sm:rounded-2xl text-[#aeb5c0]'>
-					<TrendingUp className='w-5 h-5 sm:w-6 sm:h-6 text-[#2dd4bf]' />
+			<div className='flex items-center gap-3 shrink-0'>
+				<div className='p-2.5 bg-[#f8fafc05] border border-[#1e2533] rounded-2xl text-[#aeb5c0]'>
+					<TrendingUp className='w-6 h-6 text-[#2dd4bf]' />
 				</div>
-				<h2 className='text-xl sm:text-2xl lg:text-3xl text-white font-semibold truncate'>
+				<h2 className='text-2xl lg:text-3xl text-white font-semibold'>
 					Featured Snippets
 				</h2>
 			</div>
 
-			{/* Зажатый по высоте список с авто-скроллом */}
-			<div className='flex-1 h-full overflow-y-auto pr-1 custom-scrollbar min-h-0'>
-				<ul className='flex flex-col gap-3 sm:gap-3.5'>
-					{featuredSnippets && featuredSnippets.length > 0 ? (
-						featuredSnippets.map(snippet => (
-							<li key={snippet.id}>
+			{/* Контейнер списка с прокруткой */}
+			<div className='overflow-y-auto pr-1 custom-scrollbar flex-1'>
+				{featuredSnippets && featuredSnippets.length > 0 ? (
+					<ul className='flex flex-col gap-3.5 h-full'>
+						{featuredSnippets.map(snippet => (
+							<li key={snippet.id} className='flex-1'>
 								<Link
 									to={`/snippet/${snippet.id}`}
-									className='group relative block w-full bg-[#080d1a]/90 hover:bg-[#0c1427] border border-[#172033] hover:border-[#2dd4bf]/40 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 transition-all duration-300 shadow-md hover:shadow-[0_0_20px_0_rgba(45,212,191,0.12)] overflow-hidden'
+									className='group relative flex flex-col justify-between h-full w-full bg-[#080d1a]/90 hover:bg-[#0c1427] border border-[#172033] hover:border-[#2dd4bf]/40 rounded-2xl p-4 transition-all duration-300 shadow-md hover:shadow-[0_0_20px_0_rgba(45,212,191,0.12)] overflow-hidden'
 								>
 									{/* Мятный Glow */}
 									<div className='absolute -right-12 -top-12 w-24 h-24 bg-[#2dd4bf]/10 rounded-full blur-2xl group-hover:bg-[#2dd4bf]/20 transition-all duration-500 pointer-events-none' />
 
-									{/* ВЕРХ: Язык/Теги + Закрашенная звезда */}
-									<div className='flex items-center justify-between gap-2 mb-2.5'>
-										<div className='flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-hidden'>
-											{snippet.languages && (
-												<span className='inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#111927] text-[#38bdf8] border border-[#1e293b] group-hover:border-[#38bdf8]/30 transition-colors shrink-0'>
-													{snippet.languages.name}
-												</span>
-											)}
+									<div>
+										{/* ВЕРХ: Язык/Теги + Звезда */}
+										<div className='flex items-center justify-between gap-2 mb-2.5'>
+											<div className='flex items-center gap-1.5 overflow-hidden min-w-0'>
+												{snippet.languages && (
+													<span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-[#111927] text-[#38bdf8] border border-[#1e293b] group-hover:border-[#38bdf8]/30 transition-colors shrink-0'>
+														{snippet.languages.name}
+													</span>
+												)}
 
-											{snippet.tags && snippet.tags.length > 0 && (
-												<div className='hidden xs:flex items-center gap-1.5 overflow-hidden text-xs'>
-													{snippet.tags.slice(0, 2).map((tag, idx) => (
-														<span
-															key={idx}
-															className='text-[#64748b] font-mono truncate'
-														>
-															{tag}
-														</span>
-													))}
-												</div>
-											)}
+												{snippet.tags && snippet.tags.length > 0 && (
+													<span className='text-[#64748b] font-mono text-xs truncate max-w-[70px]'>
+														{snippet.tags[0]}
+													</span>
+												)}
+											</div>
+
+											<div className='flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-[#0e1726] border border-[#172033] text-slate-200 transition-colors shrink-0'>
+												<span>{snippet.stars_count}</span>
+												<Star
+													size={12}
+													className='text-[#facc15] fill-[#facc15]'
+												/>
+											</div>
 										</div>
 
-										<div className='flex items-center gap-1.5 text-xs sm:text-sm font-semibold px-2 sm:px-2.5 py-1 rounded-lg bg-[#0e1726] border border-[#172033] text-slate-200 transition-colors shrink-0'>
-											<span>{snippet.stars_count}</span>
-											<Star
-												size={14}
-												className='text-[#facc15] fill-[#facc15]'
-											/>
+										{/* ЦЕНТР: Заголовок и Описание */}
+										<div className='mb-3'>
+											<h3 className='text-white font-bold text-base group-hover:text-[#2dd4bf] transition-colors line-clamp-1 break-words'>
+												{snippet.title}
+											</h3>
+											{snippet.description && (
+												<p className='text-[#94a3b8] text-xs mt-1 line-clamp-2 leading-relaxed font-normal break-words'>
+													{snippet.description}
+												</p>
+											)}
 										</div>
-									</div>
-
-									{/* ЦЕНТР: Заголовок и Описание */}
-									<div className='mb-3'>
-										<h3 className='text-white font-bold text-base sm:text-lg group-hover:text-[#2dd4bf] transition-colors line-clamp-1 break-words'>
-											{snippet.title}
-										</h3>
-										{snippet.description && (
-											<p className='text-[#94a3b8] text-xs sm:text-sm mt-1 line-clamp-2 leading-relaxed font-normal break-words'>
-												{snippet.description}
-											</p>
-										)}
 									</div>
 
 									{/* НИЗ: Автор и Копии */}
-									<div className='flex items-center justify-between pt-2.5 border-t border-[#131c2e] text-xs text-[#64748b] gap-2'>
+									<div className='flex items-center justify-between pt-2.5 border-t border-[#131c2e] text-xs text-[#64748b] gap-2 mt-auto'>
 										{snippet.profiles ? (
-											<div className='flex items-center gap-1.5 min-w-0'>
-												<span className='text-[#94a3b8] text-xs sm:text-sm font-medium group-hover:text-slate-300 transition-colors truncate'>
-													@{snippet.profiles.tag}
-												</span>
-											</div>
+											<span className='text-[#94a3b8] text-xs font-medium group-hover:text-slate-300 transition-colors truncate'>
+												@{snippet.profiles.tag}
+											</span>
 										) : (
-											<span className='text-[#64748b] text-xs sm:text-sm shrink-0'>
+											<span className='text-[#64748b] text-xs shrink-0'>
 												TakeCode
 											</span>
 										)}
 
-										<div className='flex items-center gap-1.5 text-[#64748b] text-xs sm:text-sm group-hover:text-[#94a3b8] transition-colors shrink-0'>
-											<Copy size={13} />
+										<div className='flex items-center gap-1 text-[#64748b] text-xs group-hover:text-[#94a3b8] transition-colors shrink-0'>
+											<Copy size={12} />
 											<span>{snippet.copied_count || 0} copies</span>
 										</div>
 									</div>
 								</Link>
 							</li>
-						))
-					) : (
-						<p className='text-[#64748b] text-sm mt-4'>
-							No featured snippets available.
-						</p>
-					)}
-				</ul>
+						))}
+					</ul>
+				) : (
+					<div className='flex items-center justify-center h-full text-[#64748b] text-sm'>
+						No featured snippets available.
+					</div>
+				)}
 			</div>
 		</div>
 	);

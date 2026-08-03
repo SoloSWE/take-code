@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { supabase } from '../utils/supabase';
 import {
 	ArrowLeft,
-	CheckCircle2,
-	Sparkles,
-	Code2,
-	Layers,
-	Tag,
-	Plus,
-	X,
 	Box,
+	CheckCircle2,
+	Code2,
 	FileText,
+	Layers,
+	Plus,
+	Sparkles,
+	Tag,
+	X,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CodeEditor } from '../components/ui/CodeEditor';
+import { supabase } from '../utils/supabase';
 
 type OptionItem = {
 	id: string;
@@ -211,9 +211,7 @@ export const EditSnippet = () => {
 
 	if (loading) {
 		return (
-			<div className='text-white p-8 max-w-7xl mx-auto'>
-				Loading snippet data...
-			</div>
+			<div className='text-white p-8   mx-auto'>Loading snippet data...</div>
 		);
 	}
 

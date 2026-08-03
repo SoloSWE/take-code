@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../../utils/supabase';
 import { UsersIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type { UserProfile } from '../../pages/Profile';
+import { supabase } from '../../utils/supabase';
 
 type AuthorWithStats = UserProfile & {
 	snippetsCount: number;
@@ -78,7 +78,7 @@ export const TrendingActivites = () => {
 	}, []);
 
 	return (
-		<section className='w-full max-w-7xl mx-auto px-4 py-5 mb-20'>
+		<section className='w-full   mx-auto px-4 py-5 mb-20'>
 			<div className='flex gap-4 w-full h-auto bg-[#101a2e] border border-[#222c41] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
 				<div className='w-1/2 h-auto bg-[#0b1225] border border-[#1c2538] rounded-3xl flex flex-col gap-4 px-8 py-8 max-[965px]:w-full'>
 					<span className='flex items-center justify-center gap-2 max-w-60 h-auto rounded-3xl bg-[#34d3992e] border border-[#34d39952] text-[#A7F3D0] font-bold text-lg px-4 py-1 max-[460px]:py-2 max-[321px]:text-[15px]'>

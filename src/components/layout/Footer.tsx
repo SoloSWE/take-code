@@ -2,15 +2,19 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { Braces } from 'lucide-react';
 
+import {
+	faGithub,
+	faInstagram,
+	faTelegram,
+} from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInstagram, faTelegram, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { cn } from '../../utils/cn';
 
 export const Footer = () => {
 	const location = useLocation();
 	return (
 		<footer className='w-full border-t border-[#222b3e] bg-[#020617]/40 backdrop-blur-md px-4 sm:px-8 lg:px-16 py-8 md:py-12 flex flex-col items-center justify-center'>
-			<div className='w-full max-w-7xl flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-4'>
+			<div className='w-full   flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-4'>
 				<Link to={'/'}>
 					<div className='flex items-center gap-3 justify-center md:justify-start select-none'>
 						<div className='flex items-center justify-center w-10 h-10 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] shadow-[0px_0px_20px_0px_rgba(56,189,248,0.25)] max-lg:w-9 max-lg:h-9'>

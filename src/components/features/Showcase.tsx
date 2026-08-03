@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { cn } from '../../utils/cn';
 
+import { supabase } from '../../utils/supabase';
 import { FeaturCards } from './FeaturCards';
 import { Snippets } from './Snippets';
-import { supabase } from '../../utils/supabase';
 
 const categories = [
 	{
@@ -108,11 +108,11 @@ export const Showcase = () => {
 			}
 
 			if (activeSnippetCategory === 'Trending') {
-				query = query.order('stars_count', { ascending: false }).limit(4)
+				query = query.order('stars_count', { ascending: false }).limit(4);
 			} else if (activeSnippetCategory === 'Most Copied') {
-				query = query.order('copied_count', { ascending: false }).limit(4)
+				query = query.order('copied_count', { ascending: false }).limit(4);
 			} else if (activeSnippetCategory === 'Recent') {
-				query = query.order('created_at', { ascending: false }).limit(4)
+				query = query.order('created_at', { ascending: false }).limit(4);
 			}
 
 			const { data, error } = await query;
@@ -140,7 +140,7 @@ export const Showcase = () => {
 	}, [activeSnippetCategory]); // Перезапускаем при смене категории
 
 	return (
-		<section className='w-full max-w-7xl mx-auto px-4 py-20 flex flex-col gap-24'>
+		<section className='w-full   mx-auto px-4 py-20 flex flex-col gap-24'>
 			<div className='w-full flex flex-col items-center'>
 				<h2 className='text-white font-extrabold text-5xl md:text-6xl text-center leading-tight'>
 					Find battle-tested code <br /> without the noise.

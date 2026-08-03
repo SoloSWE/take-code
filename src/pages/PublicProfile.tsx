@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { supabase } from '../utils/supabase';
 import { socialIconsMap } from '../mocks/mockData';
+import { supabase } from '../utils/supabase';
 
 import { AzureEntraGlobalSecureAccess } from '@thesvg/react';
 
 import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
+import type { snippetCard } from '../components/features/Showcase';
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
-import type { snippetCard } from '../components/features/Showcase';
 
 interface SocialMedia {
 	id: number;
@@ -102,7 +102,7 @@ export const PublicProfile = () => {
 	}, [user?.id]);
 
 	return (
-		<section className='w-full max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-10'>
+		<section className='w-full   mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-10'>
 			<div className='flex flex-col lg:flex-row gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-3xl sm:rounded-4xl p-3 sm:p-4.5'>
 				{/* 1. ЛЕВАЯ КОЛОНКА (Информация о пользователе) */}
 				<div className='w-full lg:w-1/2 bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl flex flex-col gap-5 p-5 sm:p-7 lg:p-9 hover:border-[#252e44] transition-colors'>
