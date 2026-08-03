@@ -44,13 +44,12 @@ export const EditSnippet = () => {
 		[],
 	);
 
-	// Local UI State for Custom Tag & Dependency Inputs
+	// Local UI State
 	const [tagInput, setTagInput] = useState('');
 	const [isAddingCustomDep, setIsAddingCustomDep] = useState(false);
 	const [customDepName, setCustomDepName] = useState('');
 	const [customDepCommand, setCustomDepCommand] = useState('');
 
-	// Derived State for CodeEditor language name
 	const currentLangName =
 		languagesList.find(lang => lang.id === selectedLanguageId)?.name || '';
 
@@ -131,7 +130,6 @@ export const EditSnippet = () => {
 		if (!customDepName.trim()) return;
 
 		try {
-			// Insert into 'dependencies' table
 			const { data, error } = await supabase
 				.from('dependencies')
 				.insert({
@@ -182,7 +180,6 @@ export const EditSnippet = () => {
 
 			if (snippetError) throw snippetError;
 
-			// Delete old dependencies relation
 			const { error: deleteError } = await supabase
 				.from('snippet_dependencies')
 				.delete()
@@ -190,7 +187,6 @@ export const EditSnippet = () => {
 
 			if (deleteError) throw deleteError;
 
-			// Insert new dependencies relation
 			if (selectedDependencyIds.length > 0) {
 				const dependenciesPayload = selectedDependencyIds.map(depId => ({
 					snippet_id: id,
@@ -214,25 +210,30 @@ export const EditSnippet = () => {
 	};
 
 	if (loading) {
-		return <div className='text-white p-8'>Loading snippet data...</div>;
+		return (
+			<div className='text-white p-8 max-w-7xl mx-auto'>
+				Loading snippet data...
+			</div>
+		);
 	}
 
 	return (
-		<div className='min-h-screen text-slate-200 font-sans p-4 sm:p-8 selection:bg-[#2dd4bf]/30'>
+		<div className='min-h-screen text-slate-200 font-sans p-3 sm:p-6 lg:p-8 selection:bg-[#2dd4bf]/30 mx-auto'>
 			{/* TOP BAR */}
-			<div className='mx-auto flex items-center justify-between mb-6'>
+			<div className='flex items-center justify-between gap-4 mb-6'>
 				<button
 					onClick={() => navigate('/profile')}
 					className='flex items-center gap-2 text-slate-400 hover:text-white transition-colors cursor-pointer text-sm font-medium'
 				>
 					<ArrowLeft className='w-4 h-4' />
-					Back to dashboard
+					<span className='hidden sm:inline'>Back to dashboard</span>
+					<span className='sm:hidden'>Back</span>
 				</button>
 
 				<button
 					onClick={handleUpdate}
 					disabled={loading}
-					className='flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-extrabold bg-[#2dd4bf] text-[#090f22] hover:bg-[#5eead4] transition-all cursor-pointer shadow-lg shadow-[#2dd4bf]/10 disabled:opacity-50'
+					className='flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-[#2dd4bf] text-[#090f22] hover:bg-[#5eead4] transition-all cursor-pointer shadow-lg shadow-[#2dd4bf]/10 disabled:opacity-50 shrink-0'
 				>
 					<CheckCircle2 className='w-4 h-4' />
 					<span>{loading ? 'Updating...' : 'Update Snippet'}</span>
@@ -240,29 +241,29 @@ export const EditSnippet = () => {
 			</div>
 
 			{/* MAIN CONTAINER */}
-			<div className='mx-auto bg-[#0b1220] border border-[#1b2333] rounded-2xl p-6 lg:p-8 shadow-2xl space-y-8'>
+			<div className='bg-[#0b1220] border border-[#1b2333] rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl space-y-6 sm:space-y-8'>
 				{/* Header */}
-				<div className='flex items-start gap-4 border-b border-[#1b2333] pb-6'>
-					<div className='p-3 bg-[#162032] border border-[#222f47] rounded-2xl text-[#2dd4bf]'>
-						<Sparkles className='w-6 h-6' />
+				<div className='flex items-start gap-3 sm:gap-4 border-b border-[#1b2333] pb-6'>
+					<div className='p-2.5 sm:p-3 bg-[#162032] border border-[#222f47] rounded-2xl text-[#2dd4bf] shrink-0'>
+						<Sparkles className='w-5 h-5 sm:w-6 sm:h-6' />
 					</div>
 					<div>
-						<h1 className='text-2xl sm:text-3xl font-black text-white tracking-tight'>
+						<h1 className='text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight'>
 							Edit Snippet
 						</h1>
-						<p className='text-slate-400 text-sm sm:text-base mt-1 leading-relaxed'>
+						<p className='text-slate-400 text-xs sm:text-sm lg:text-base mt-1 leading-relaxed'>
 							Update your snippet with the latest changes and improvements.
 						</p>
 					</div>
 				</div>
 
-				<div className='grid grid-cols-1 lg:grid-cols-12 gap-8'>
+				<div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8'>
 					{/* LEFT COLUMN */}
-					<div className='lg:col-span-7 xl:col-span-8 space-y-6'>
+					<div className='lg:col-span-7 xl:col-span-8 space-y-5 sm:space-y-6'>
 						{/* Title & File Name */}
 						<div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
 							<div className='space-y-1.5'>
-								<label className='text-sm font-bold text-slate-300 tracking-wider'>
+								<label className='text-xs sm:text-sm font-bold text-slate-300 tracking-wider block'>
 									Title <span className='text-rose-400'>*</span>
 								</label>
 								<input
@@ -270,12 +271,12 @@ export const EditSnippet = () => {
 									value={title}
 									onChange={e => setTitle(e.target.value)}
 									placeholder='useSessionGuard hook'
-									className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all text-sm font-medium'
+									className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl px-3.5 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all text-sm font-medium'
 								/>
 							</div>
 
 							<div className='space-y-1.5'>
-								<label className='text-sm font-bold text-slate-300 tracking-wider'>
+								<label className='text-xs sm:text-sm font-bold text-slate-300 tracking-wider block'>
 									File Name (`code_filename`)
 								</label>
 								<input
@@ -283,14 +284,14 @@ export const EditSnippet = () => {
 									value={codeFilename}
 									onChange={e => setCodeFilename(e.target.value)}
 									placeholder='use-session-guard.ts'
-									className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all text-sm font-mono'
+									className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl px-3.5 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all text-sm font-mono'
 								/>
 							</div>
 						</div>
 
 						{/* Short Description */}
 						<div className='space-y-1.5'>
-							<label className='text-sm font-bold text-slate-300 tracking-wider'>
+							<label className='text-xs sm:text-sm font-bold text-slate-300 tracking-wider block'>
 								Description
 							</label>
 							<textarea
@@ -304,7 +305,7 @@ export const EditSnippet = () => {
 
 						{/* Source Code Section */}
 						<div className='space-y-3 pt-2'>
-							<div className='flex items-center justify-between'>
+							<div className='flex items-center justify-between gap-2 flex-wrap'>
 								<div className='flex items-center gap-2 text-white font-bold text-sm'>
 									<Code2 className='w-4 h-4 text-[#2dd4bf]' />
 									<span>Source Code</span>
@@ -313,7 +314,7 @@ export const EditSnippet = () => {
 								<select
 									value={selectedLanguageId}
 									onChange={e => setSelectedLanguageId(e.target.value)}
-									className='bg-[#090f22] border border-[#1b2333] text-[#2dd4bf] rounded-xl px-3 py-1.5 text-sm font-bold focus:outline-none cursor-pointer'
+									className='bg-[#090f22] border border-[#1b2333] text-[#2dd4bf] rounded-xl px-3 py-1.5 text-xs sm:text-sm font-bold focus:outline-none cursor-pointer'
 								>
 									<option value=''>Select Language</option>
 									{languagesList.map(lang => (
@@ -338,17 +339,17 @@ export const EditSnippet = () => {
 					</div>
 
 					{/* RIGHT COLUMN / SIDEBAR */}
-					<div className='lg:col-span-5 xl:col-span-4 space-y-6 lg:border-l lg:border-[#1b2333] lg:pl-8'>
+					<div className='lg:col-span-5 xl:col-span-4 space-y-6 pt-6 border-t border-[#1b2333] lg:pt-0 lg:border-t-0 lg:border-l lg:pl-8'>
 						{/* Framework Select */}
 						<div className='space-y-2'>
-							<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
+							<label className='text-xs sm:text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
 								<Layers className='w-3.5 h-3.5 text-[#2dd4bf]' />
 								Framework
 							</label>
 							<select
 								value={selectedFrameworkId}
 								onChange={e => setSelectedFrameworkId(e.target.value)}
-								className='w-full bg-[#090f22] border border-[#1b2333] text-white rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
+								className='w-full bg-[#090f22] border border-[#1b2333] text-white rounded-xl px-3 py-2.5 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
 							>
 								<option value=''>Select Framework</option>
 								{frameworksList.map(fw => (
@@ -365,7 +366,7 @@ export const EditSnippet = () => {
 
 						{/* TAGS SELECT */}
 						<div className='space-y-2.5'>
-							<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
+							<label className='text-xs sm:text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
 								<Tag className='w-3.5 h-3.5 text-[#2dd4bf]' />
 								Tags
 							</label>
@@ -377,7 +378,7 @@ export const EditSnippet = () => {
 										e.target.value = '';
 									}
 								}}
-								className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
+								className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
 							>
 								<option value=''>+ Select tag from database...</option>
 								{tagsList.map(tag => (
@@ -401,12 +402,12 @@ export const EditSnippet = () => {
 										(e.preventDefault(), handleAddTag(tagInput))
 									}
 									placeholder='Or type custom tag...'
-									className='flex-1 bg-[#090f22] border border-[#1b2333] rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
+									className='flex-1 bg-[#090f22] border border-[#1b2333] rounded-xl px-3 py-2 text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
 								/>
 								<button
 									type='button'
 									onClick={() => handleAddTag(tagInput)}
-									className='p-2 bg-[#162032] border border-[#222f47] text-[#2dd4bf] hover:bg-[#1f2d47] rounded-xl transition-all cursor-pointer'
+									className='p-2 bg-[#162032] border border-[#222f47] text-[#2dd4bf] hover:bg-[#1f2d47] rounded-xl transition-all cursor-pointer shrink-0'
 								>
 									<Plus className='w-4 h-4' />
 								</button>
@@ -416,7 +417,7 @@ export const EditSnippet = () => {
 								{selectedTags.map(tag => (
 									<span
 										key={tag}
-										className='flex items-center gap-1.5 text-sm font-mono font-bold px-3 py-1 rounded-xl bg-[#092227] text-[#2dd4bf] border border-[#0d4247]'
+										className='flex items-center gap-1.5 text-xs sm:text-sm font-mono font-bold px-2.5 py-1 rounded-xl bg-[#092227] text-[#2dd4bf] border border-[#0d4247]'
 									>
 										#{tag}
 										<X
@@ -431,7 +432,7 @@ export const EditSnippet = () => {
 						{/* DEPENDENCIES SELECT */}
 						<div className='space-y-2.5'>
 							<div className='flex items-center justify-between'>
-								<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
+								<label className='text-xs sm:text-sm font-bold text-slate-300 tracking-wider flex items-center gap-1.5'>
 									<Box className='w-3.5 h-3.5 text-[#2dd4bf]' />
 									Dependencies
 								</label>
@@ -453,7 +454,7 @@ export const EditSnippet = () => {
 											e.target.value = '';
 										}
 									}}
-									className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
+									className='w-full bg-[#090f22] border border-[#1b2333] text-slate-300 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#2dd4bf] cursor-pointer'
 								>
 									<option value=''>Select dependency from database...</option>
 									{dependenciesList.map(dep => (
@@ -473,27 +474,27 @@ export const EditSnippet = () => {
 										value={customDepName}
 										onChange={e => setCustomDepName(e.target.value)}
 										placeholder='Package name (e.g. lodash)'
-										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
+										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
 									/>
 									<input
 										type='text'
 										value={customDepCommand}
 										onChange={e => setCustomDepCommand(e.target.value)}
 										placeholder='Install cmd (optional: npm i lodash)'
-										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
+										className='w-full bg-[#0d131f] border border-[#1b2333] rounded-lg px-3 py-1.5 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf]'
 									/>
 									<div className='flex justify-end gap-2 pt-1'>
 										<button
 											type='button'
 											onClick={() => setIsAddingCustomDep(false)}
-											className='px-2.5 py-1 text-sm text-slate-400 hover:text-white cursor-pointer'
+											className='px-2.5 py-1 text-xs sm:text-sm text-slate-400 hover:text-white cursor-pointer'
 										>
 											Cancel
 										</button>
 										<button
 											type='button'
 											onClick={handleAddCustomDependency}
-											className='px-3 py-1 bg-[#2dd4bf] text-[#090f22] font-bold text-sm rounded-lg hover:bg-[#5eead4] transition-all cursor-pointer'
+											className='px-3 py-1 bg-[#2dd4bf] text-[#090f22] font-bold text-xs sm:text-sm rounded-lg hover:bg-[#5eead4] transition-all cursor-pointer'
 										>
 											Add Package
 										</button>
@@ -508,7 +509,7 @@ export const EditSnippet = () => {
 									return (
 										<span
 											key={dep.id}
-											className='flex items-center gap-1.5 text-sm font-mono px-2.5 py-1 rounded-lg bg-[#162032] text-[#2dd4bf] border border-[#222f47]'
+											className='flex items-center gap-1.5 text-xs sm:text-sm font-mono px-2.5 py-1 rounded-lg bg-[#162032] text-[#2dd4bf] border border-[#222f47]'
 										>
 											{dep.name}
 											<X
@@ -523,7 +524,7 @@ export const EditSnippet = () => {
 
 						{/* README / Usage Documentation */}
 						<div className='space-y-2 pt-2'>
-							<label className='text-sm font-bold text-slate-300 tracking-wider flex items-center gap-2'>
+							<label className='text-xs sm:text-sm font-bold text-slate-300 tracking-wider flex items-center gap-2'>
 								<FileText className='w-4 h-4 text-[#2dd4bf]' />
 								How To Use?
 							</label>
@@ -532,7 +533,7 @@ export const EditSnippet = () => {
 								value={readme}
 								onChange={e => setReadme(e.target.value)}
 								placeholder='## Installation&#10;Paste hook into your `hooks/` directory...'
-								className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl p-3.5 text-white font-mono text-sm leading-relaxed placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all resize-none'
+								className='w-full bg-[#090f22] border border-[#1b2333] rounded-xl p-3.5 text-white font-mono text-xs sm:text-sm leading-relaxed placeholder-slate-600 focus:outline-none focus:border-[#2dd4bf] transition-all resize-none'
 							/>
 						</div>
 					</div>

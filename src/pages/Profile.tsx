@@ -17,7 +17,6 @@ import { UserSnippetsList } from '../components/features/UserSnippetsList';
 import { Link } from 'react-router-dom';
 import { UserBookmarkedSnippetsList } from '../components/features/UserBookmarkedSnippetsList';
 
-
 export interface SocialMedia {
 	id: number;
 	name: string;
@@ -39,10 +38,13 @@ export const Profile = () => {
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-	const [featuredSnippets, setFeaturedSnippets] = useState<snippetCard[] | null>(null);
+	const [featuredSnippets, setFeaturedSnippets] = useState<
+		snippetCard[] | null
+	>(null);
 	const [snippetsCount, setSnippetsCount] = useState<number>(0);
 	const [snippetsCountCopy, setSnippetsCountCopy] = useState<number>(0);
-	const [bookmarkedSnippetsCount, setBookmarkedSnippetsCount] = useState<number>(0);
+	const [bookmarkedSnippetsCount, setBookmarkedSnippetsCount] =
+		useState<number>(0);
 
 	const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 	const [selectedCategory, setSelectedCategory] =
@@ -87,33 +89,38 @@ export const Profile = () => {
 	}, [user?.id]);
 
 	useEffect(() => {
-		// 🛑 Не делаем запрос, пока user еще не загрузился!
 		if (!user?.id) return;
 
 		async function fetchFeaturedSnippets() {
 			setLoading(true);
 			try {
-				const [featuredSnippets, snippetsCount, bookmarkedSnippetsCount] = await Promise.all([
-					supabase
-						.from('snippets')
-						.select('*, profiles(avatar_url, tag, username)')
-						.order('stars_count', { ascending: false })
-						.eq('user_id', user?.id)
-						.limit(2),
-					supabase
-						.from('snippets')
-						.select('*, copied_count')
-						.eq('user_id', user?.id),
-					supabase
-						.from('bookmarks')
-						.select('*', { count: 'exact' })
-						.eq('user_id', user?.id)
-				]);
+				const [featuredSnippetsRes, snippetsCountRes, bookmarkedSnippetsRes] =
+					await Promise.all([
+						supabase
+							.from('snippets')
+							.select('*, profiles(avatar_url, tag, username)')
+							.order('stars_count', { ascending: false })
+							.eq('user_id', user?.id)
+							.limit(2),
+						supabase
+							.from('snippets')
+							.select('*, copied_count')
+							.eq('user_id', user?.id),
+						supabase
+							.from('bookmarks')
+							.select('*', { count: 'exact' })
+							.eq('user_id', user?.id),
+					]);
 
-				setFeaturedSnippets(featuredSnippets.data || []);
-				setSnippetsCount(snippetsCount.data?.length || 0);
-				setBookmarkedSnippetsCount(bookmarkedSnippetsCount.data?.length || 0);
-				setSnippetsCountCopy(snippetsCount.data?.reduce((acc, snippet) => acc + (snippet.copied_count || 0), 0) || 0);
+				setFeaturedSnippets(featuredSnippetsRes.data || []);
+				setSnippetsCount(snippetsCountRes.data?.length || 0);
+				setBookmarkedSnippetsCount(bookmarkedSnippetsRes.count || 0);
+				setSnippetsCountCopy(
+					snippetsCountRes.data?.reduce(
+						(acc, snippet) => acc + (snippet.copied_count || 0),
+						0,
+					) || 0,
+				);
 			} catch (error) {
 				console.error('Error fetching featured snippets:', error);
 				console.error('Error fetching snippet copies:', error);
@@ -123,17 +130,18 @@ export const Profile = () => {
 		}
 
 		fetchFeaturedSnippets();
-	}, [user?.id]); 
+	}, [user?.id]);
 
 	const handleSelectedCategory = (category: string) => {
 		setSelectedCategory(category);
-	}
+	};
 
 	return (
-		<section className='w-full mx-auto py-6 px-10'>
-			<div className='flex gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-4xl px-4.5 py-4.5 max-[965px]:flex-col'>
-				{/* 1. ЛЕВАЯ КОЛОНКА (Она задаёт естественную высоту всему контейнеру!) */}
-				<div className='w-1/2 bg-[#080e1d] border border-[#19202f] rounded-3xl flex flex-col gap-5 px-8 py-9 max-[965px]:w-full hover:border-[#252e44] hover:ring-[#252e44]'>
+		<section className='w-full max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-10'>
+			{/* Верхний блок: Профиль и Популярные сниппеты */}
+			<div className='flex flex-col lg:flex-row gap-4 w-full bg-[#0c1321] border border-[#252d3c] rounded-3xl sm:rounded-4xl p-3 sm:p-4.5'>
+				{/* Левая колонка (Профиль) */}
+				<div className='w-full lg:w-1/2 bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl flex flex-col gap-5 p-5 sm:p-7 lg:p-9 hover:border-[#252e44] transition-colors'>
 					{loading ? (
 						<ProflieAboutLoader />
 					) : (
@@ -146,9 +154,9 @@ export const Profile = () => {
 					)}
 				</div>
 
-				{/* 2. ПРАВАЯ КОЛОНКА (Делаем relative, чтобы запереть правый блок внутри высоты левого) */}
-				<div className='w-1/2 relative max-[965px]:w-full max-[965px]:min-h-100'>
-					<div className='absolute inset-0 bg-[#080e1d] border border-[#19202f] rounded-4xl px-8 py-8 hover:border-[#252e44] hover:ring-[#252e44] overflow-hidden'>
+				{/* Правая колонка (Featured Snippets) */}
+				<div className='w-full lg:w-1/2 flex flex-col'>
+					<div className='w-full h-full min-h-[300px] sm:min-h-[360px] bg-[#080e1d] border border-[#19202f] rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 hover:border-[#252e44] transition-colors overflow-hidden'>
 						{loading ? (
 							<ProfileFeaturedSnippetsLoader />
 						) : (
@@ -157,53 +165,68 @@ export const Profile = () => {
 					</div>
 				</div>
 			</div>
-			<div className='bg-[#090f22] border border-[#20273b] mt-8 rounded-3xl px-3 py-3'>
-				<div className='flex items-center justify-between'>
-					<div className='flex'>
-						<ul className='flex gap-3'>
+
+			{/* Панель навигации по категориям и действие */}
+			<div className='bg-[#090f22] border border-[#20273b] mt-6 sm:mt-8 rounded-2xl sm:rounded-3xl p-3 sm:p-4'>
+				<div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4'>
+					{/* Табы */}
+					<div className='flex w-full sm:w-auto'>
+						<ul className='flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto'>
 							<li
 								onClick={() => handleSelectedCategory('My Snippets')}
 								className={cn(
-									'flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer transition-colors',
+									'flex-1 sm:flex-initial flex items-center justify-center sm:justify-start bg-[#13182b] border border-[#20273a] px-3.5 sm:px-4 py-2.5 sm:py-3 gap-2.5 sm:gap-3 text-[#94a3b8] text-sm sm:text-base rounded-xl sm:rounded-2xl cursor-pointer transition-colors whitespace-nowrap',
 									selectedCategory === 'My Snippets' &&
 										'bg-[#252d3c] text-white',
 								)}
 							>
-								<Code2 size={20} />
+								<Code2 className='w-4 h-4 sm:w-5 sm:h-5' />
 								My Snippets
 							</li>
 							<li
 								onClick={() => handleSelectedCategory('Saved / Bookmarks')}
 								className={cn(
-									'flex items-center bg-[#13182b] border border-[#20273a] px-4 py-3 gap-3 text-[#94a3b8] text-[16px] rounded-2xl cursor-pointer',
+									'flex-1 sm:flex-initial flex items-center justify-center sm:justify-start bg-[#13182b] border border-[#20273a] px-3.5 sm:px-4 py-2.5 sm:py-3 gap-2.5 sm:gap-3 text-[#94a3b8] text-sm sm:text-base rounded-xl sm:rounded-2xl cursor-pointer transition-colors whitespace-nowrap',
 									selectedCategory === 'Saved / Bookmarks' &&
 										'bg-[#252d3c] text-white',
 								)}
 							>
-								<Bookmark size={20} />
+								<Bookmark className='w-4 h-4 sm:w-5 sm:h-5' />
 								Saved / Bookmarks
 							</li>
 						</ul>
 					</div>
-					<div className='flex items-center gap-4'>
-						<p className='text-[#64748b] font-mono text-[16px]'>
-							{selectedCategory === 'My Snippets' ? snippetsCount : bookmarkedSnippetsCount} published
+
+					{/* Счетчик и Кнопка */}
+					<div className='flex flex-row items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto pt-2 sm:pt-0 border-t border-[#20273b] sm:border-t-0'>
+						<p className='text-[#64748b] font-mono text-xs sm:text-sm md:text-base whitespace-nowrap'>
+							{selectedCategory === 'My Snippets'
+								? snippetsCount
+								: bookmarkedSnippetsCount}{' '}
+							published
 						</p>
-						<Link to={'/createSnippet'}>
-							<button className='w-full h-auto px-5 py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer max-[640px]:w-full max-sm:w-75 text-[#13182b] active:scale-98 transition-transform'>
+						<Link
+							to={'/createSnippet'}
+							className='w-auto sm:w-auto flex-1 sm:flex-initial'
+						>
+							<button className='w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-bold cursor-pointer text-[#13182b] active:scale-98 transition-transform text-sm sm:text-base whitespace-nowrap'>
 								New Snippet
 							</button>
 						</Link>
 					</div>
 				</div>
 			</div>
-			
-			{selectedCategory === 'My Snippets' ? (
-				<UserSnippetsList />
-			) : (
-				<UserBookmarkedSnippetsList />
-			)}
 
+			{/* Список сниппетов */}
+			<div className='mt-4 sm:mt-6'>
+				{selectedCategory === 'My Snippets' ? (
+					<UserSnippetsList />
+				) : (
+					<UserBookmarkedSnippetsList />
+				)}
+			</div>
+
+			{/* Модальное окно настроек */}
 			{isSettingsOpen && (
 				<ProfileSettings onClose={() => setIsSettingsOpen(false)} user={user} />
 			)}

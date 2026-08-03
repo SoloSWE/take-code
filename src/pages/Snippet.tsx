@@ -640,7 +640,7 @@ export const Snippet = () => {
 						/>
 						<button
 							onClick={() => addComment(commentText, replyTo?.id ?? null)}
-							className='w-16 sm:w-20 h-9 sm:h-10 shrink-0 rounded-lg sm:rounded-xl bg-gradient-to-br from-[#38BDF8] to-[#34D399] font-black cursor-pointer text-black text-sm sm:text-base active:scale-95 hover:opacity-90 transition-all'
+							className='w-16 sm:w-20 h-9 sm:h-10 shrink-0 rounded-lg sm:rounded-xl bg-linear-to-br from-[#38BDF8] to-[#34D399] font-black cursor-pointer text-black text-sm sm:text-base active:scale-95 hover:opacity-90 transition-all'
 						>
 							Post
 						</button>
