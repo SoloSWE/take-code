@@ -43,7 +43,7 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 												)}
 
 												{snippet.tags && snippet.tags.length > 0 && (
-													<span className='text-[#64748b] font-mono text-xs truncate max-w-[70px]'>
+													<span className='text-[#64748b] font-mono text-xs truncate max-w-17.5'>
 														{snippet.tags[0]}
 													</span>
 												)}
@@ -60,11 +60,11 @@ export const ProfileFeaturedSnippets = ({ featuredSnippets }: Props) => {
 
 										{/* ЦЕНТР: Заголовок и Описание */}
 										<div className='mb-3'>
-											<h3 className='text-white font-bold text-base group-hover:text-[#2dd4bf] transition-colors line-clamp-1 break-words'>
+											<h3 className='text-white font-bold text-base group-hover:text-[#2dd4bf] transition-colors line-clamp-1 wrap-break-words'>
 												{snippet.title}
 											</h3>
 											{snippet.description && (
-												<p className='text-[#94a3b8] text-xs mt-1 line-clamp-2 leading-relaxed font-normal break-words'>
+												<p className='text-[#94a3b8] text-xs mt-1 line-clamp-2 leading-relaxed font-normal wrap-break-words'>
 													{snippet.description}
 												</p>
 											)}

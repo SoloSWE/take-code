@@ -288,7 +288,7 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 											className='hidden'
 										/>
 									</label>
-									<span className='text-xs text-gray-400 max-w-[200px]'>
+									<span className='text-xs text-gray-400 max-w-50'>
 										Click on avatar to upload new image
 									</span>
 								</div>

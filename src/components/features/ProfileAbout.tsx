@@ -98,7 +98,7 @@ export const ProfileAbout = ({
 			</div>
 
 			{/* Описание */}
-			<p className='text-[#94A3B8] text-base sm:text-lg break-words'>
+			<p className='text-[#94A3B8] text-base sm:text-lg wrap-break-words'>
 				{userProfile?.about || 'No description'}
 			</p>
 

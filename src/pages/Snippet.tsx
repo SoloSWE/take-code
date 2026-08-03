@@ -357,7 +357,7 @@ export const Snippet = () => {
 				</div>
 			</div>
 
-			<p className='text-[#a2acb9] font-medium text-sm sm:text-[15px] leading-relaxed break-words'>
+			<p className='text-[#a2acb9] font-medium text-sm sm:text-[15px] leading-relaxed wrap-break-words'>
 				{comment.content}
 			</p>
 
@@ -528,7 +528,7 @@ export const Snippet = () => {
 					{/* Readme */}
 					<div className='p-4 sm:p-5 bg-[#0f172a] border border-[#1e2639] rounded-2xl sm:rounded-3xl text-white'>
 						<h3 className='font-black text-lg sm:text-xl'>Readme</h3>
-						<p className='text-[#94A3B8] text-sm sm:text-base mt-3 leading-relaxed break-words'>
+						<p className='text-[#94A3B8] text-sm sm:text-base mt-3 leading-relaxed wrap-break-words'>
 							{snippet?.readme || 'No readme provided'}
 						</p>
 					</div>
