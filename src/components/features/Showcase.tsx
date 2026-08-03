@@ -51,7 +51,7 @@ export interface snippetCard {
 	tags: string[];
 	stars_count: number;
 	snippet_stars?: { user_id: string }[];
-	is_starred_by_user?: boolean; // Удобный флаг для UI
+	is_starred_by_user?: boolean;
 	copied_count: number;
 	dependencies?: { dependencies: dependencyT }[];
 	languages?: {
@@ -87,9 +87,8 @@ export const Showcase = () => {
 	};
 
 	useEffect(() => {
-		// 1. Объявляем функцию
 		const fetchSnippets = async () => {
-			setSnippetsCards(null); // Сбрасываем в null для показа скелетонов
+			setSnippetsCards(null);
 
 			const {
 				data: { user },
@@ -135,66 +134,70 @@ export const Showcase = () => {
 			}
 		};
 
-		// 2. ВЫЗЫВАЕМ ЕЁ!
 		fetchSnippets();
-	}, [activeSnippetCategory]); // Перезапускаем при смене категории
+	}, [activeSnippetCategory]);
 
 	return (
-		<section className='w-full   mx-auto px-4 py-20 flex flex-col gap-24'>
+		<section className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-20 flex flex-col gap-12 sm:gap-16 lg:gap-24'>
+			{/* Верхняя часть с карточками фич */}
 			<div className='w-full flex flex-col items-center'>
-				<h2 className='text-white font-extrabold text-5xl md:text-6xl text-center leading-tight'>
-					Find battle-tested code <br /> without the noise.
+				<h2 className='text-white font-extrabold text-3xl sm:text-5xl md:text-6xl text-center leading-tight max-w-4xl'>
+					Find battle-tested code without the noise.
 				</h2>
 
-				<p className='text-[#94A3B8] text-center font-normal text-lg mt-4 max-w-2xl'>
-					TakeCode keeps reusable snippets organized, verified, and instantly{' '}
+				<p className='text-[#94A3B8] text-center font-normal text-sm sm:text-base lg:text-lg mt-3 sm:mt-4 max-w-2xl leading-relaxed'>
+					TakeCode keeps reusable snippets organized, verified, and instantly
 					copyable so teams can skip boilerplate and focus on shipping.
 				</p>
 
-				<div className='w-full mt-15'>
+				<div className='w-full mt-8 sm:mt-12 lg:mt-15'>
 					<FeaturCards />
 				</div>
 			</div>
 
+			{/* Нижняя часть со сниппетами */}
 			<div className='w-full flex flex-col items-start'>
-				<h2 className='text-white font-extrabold text-5xl md:text-6xl text-left'>
-					Explore what developers <br /> are copying now.
+				<h2 className='text-white font-extrabold text-3xl sm:text-5xl md:text-6xl text-left leading-tight'>
+					Explore what developers are copying now.
 				</h2>
 
-				<div className='w-full flex items-end justify-between max-md:flex-col max-md:items-start max-md:gap-5'>
-					<p className='text-[#94A3B8] text-left font-normal text-lg mt-4 max-w-2xl'>
+				<div className='w-full flex flex-col md:flex-row md:items-end justify-between gap-4 mt-3 sm:mt-4'>
+					<p className='text-[#94A3B8] text-left font-normal text-sm sm:text-base lg:text-lg max-w-2xl leading-relaxed'>
 						Browse reusable snippets with readable summaries, community proof,
 						and clean copy controls.
 					</p>
 
-					<ul className='flex gap-3'>
-						{categories.map(category => (
-							<li
-								key={category.id}
-								className={cn(
-									'flex items-center justify-center gap-2 w-auto h-auto rounded-3xl border font-bold text-lg cursor-pointer px-4 py-1 transition-colors duration-300 ease-in-out',
-									active !== category.id &&
-										'bg-[#1b2335] border-[#2f374a] text-[#94a3b8] hover:bg-[#131825] hover:border-[#282e3c] hover:text-[#7b8695]',
-								)}
-								style={
-									active === category.id
-										? {
-												backgroundColor: `${category.bg}`,
-												borderColor: `${category.borderColor}`,
-												color: `${category.color}`,
-											}
-										: {}
-								}
-								onClick={() => setActivesRules(category.id, category.name)}
-							>
-								{category.name}
-							</li>
-						))}
-					</ul>
+					{/* Категории (табы с горизонтальным скроллом на мобилках) */}
+					<div className='w-full md:w-auto overflow-x-auto pb-2 md:pb-0 custom-scrollbar'>
+						<ul className='flex gap-2 sm:gap-3 whitespace-nowrap min-w-max'>
+							{categories.map(category => (
+								<li
+									key={category.id}
+									className={cn(
+										'flex items-center justify-center gap-2 rounded-3xl border font-bold text-sm sm:text-base lg:text-lg cursor-pointer px-3.5 sm:px-4 py-1 sm:py-1.5 transition-colors duration-300 ease-in-out',
+										active !== category.id &&
+											'bg-[#1b2335] border-[#2f374a] text-[#94a3b8] hover:bg-[#131825] hover:border-[#282e3c] hover:text-[#7b8695]',
+									)}
+									style={
+										active === category.id
+											? {
+													backgroundColor: `${category.bg}`,
+													borderColor: `${category.borderColor}`,
+													color: `${category.color}`,
+												}
+											: {}
+									}
+									onClick={() => setActivesRules(category.id, category.name)}
+								>
+									{category.name}
+								</li>
+							))}
+						</ul>
+					</div>
 				</div>
 
-				{/* Сюда чуть позже встанет твоя сетка с 6 карточками */}
-				<div className='w-full mt-8'>
+				{/* Сетка карточек */}
+				<div className='w-full mt-6 sm:mt-8'>
 					<Snippets
 						snippets={snippetsCards}
 						activeSnippetCategory={activeSnippetCategory}
