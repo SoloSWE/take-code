@@ -2,6 +2,7 @@ import { UsersIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { UserProfile } from '../../pages/Profile';
 import { supabase } from '../../utils/supabase';
+import { Link } from 'react-router-dom';
 
 type AuthorWithStats = UserProfile & {
 	snippetsCount: number;
@@ -140,38 +141,42 @@ export const TrendingActivites = () => {
 						) : (
 							<ul className='flex flex-col gap-3 mt-4'>
 								{authors.map(author => (
-									<li
-										key={author.id}
-										className='flex items-center justify-between gap-3 w-full p-3 sm:p-3.5 bg-[#111626] border border-[#1e2535] rounded-2xl sm:rounded-3xl hover:border-[#2a344a] transition-all'
-									>
-										<div className='flex items-center gap-3 min-w-0'>
-											<img
-												className='w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl object-cover shrink-0'
-												src={author.avatar_url || '/default-avatar.png'}
-												alt={author.display_name}
-											/>
-											<div className='min-w-0 flex-1'>
-												<h4 className='text-white font-bold text-sm sm:text-base lg:text-lg truncate'>
-													{author.display_name}
-												</h4>
-												<p className='text-[#94a3aa] text-xs sm:text-sm font-medium truncate'>
-													{author.speciality || 'Developer'}
-												</p>
+									<Link to={`/user/${author.id}`}>
+										<li
+											key={author.id}
+											className='flex items-center justify-between gap-3 w-full p-3 sm:p-3.5 bg-[#111626] border border-[#1e2535] rounded-2xl sm:rounded-3xl hover:border-[#2a344a] transition-all'
+										>
+											<div className='flex items-center gap-3 min-w-0'>
+												<img
+													className='w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl object-cover shrink-0'
+													src={author.avatar_url || '/default-avatar.png'}
+													alt={author.display_name}
+												/>
+												<div className='min-w-0 flex-1'>
+													<h4 className='text-white font-bold text-sm sm:text-base lg:text-lg truncate'>
+														{author.display_name}
+													</h4>
+													<p className='text-[#94a3aa] text-xs sm:text-sm font-medium truncate'>
+														{author.speciality || 'Developer'}
+													</p>
+												</div>
 											</div>
-										</div>
 
-										<div className='flex flex-col items-end shrink-0'>
-											<span className='text-sm sm:text-base lg:text-lg text-[#38bdf8] font-bold'>
-												{author.snippetsCount}{' '}
-												<span className='hidden sm:inline'>
-													{author.snippetsCount === 1 ? 'snippet' : 'snippets'}
+											<div className='flex flex-col items-end shrink-0'>
+												<span className='text-sm sm:text-base lg:text-lg text-[#38bdf8] font-bold'>
+													{author.snippetsCount}{' '}
+													<span className='hidden sm:inline'>
+														{author.snippetsCount === 1
+															? 'snippet'
+															: 'snippets'}
+													</span>
 												</span>
-											</span>
-											<span className='text-xs sm:text-sm text-[#64748b] font-medium'>
-												{author.totalCopies} copies
-											</span>
-										</div>
-									</li>
+												<span className='text-xs sm:text-sm text-[#64748b] font-medium'>
+													{author.totalCopies} copies
+												</span>
+											</div>
+										</li>
+									</Link>
 								))}
 							</ul>
 						)}
