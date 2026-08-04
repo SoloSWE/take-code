@@ -11,6 +11,7 @@ import {
 import { SnippetSkeleton } from '../../../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
 import type { snippetCard } from '../../Home/Showcase';
 import { UserBookmarkedSnippetsCard } from './UserBookmarkedSnippetsCard';
+import { toast } from 'sonner';
 
 type BookmarkedSnippet = {
 	id: string;
@@ -57,6 +58,7 @@ export const UserBookmarkedSnippetsList = () => {
 				setSnippets(data || []);
                 console.log(data)
 			} catch (error) {
+				toast.error('Ошибка при загрузке сниппетов.');
 				console.error('Ошибка при загрузке сниппетов:', error);
 			} finally {
 				setLoading(false);

@@ -12,6 +12,7 @@ import {
 import { SnippetSkeleton } from '../../../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
 import type { snippetCard } from '../../Home/Showcase';
 import { UserSnippetCard } from './UserSnippetCard';
+import { toast } from 'sonner';
 
 export const UserSnippetsList = () => {
 	const navigate = useNavigate();
@@ -51,6 +52,7 @@ export const UserSnippetsList = () => {
 
 				setSnippets(data || []);
 			} catch (error) {
+				toast.error('Ошибка при загрузке сниппетов.');
 				console.error('Ошибка при загрузке сниппетов:', error);
 			} finally {
 				setLoading(false);
@@ -66,7 +68,9 @@ export const UserSnippetsList = () => {
 			const { error } = await supabase.from('snippets').delete().eq('id', id);
 			setSnippets(prev => (prev ?? []).filter(item => item.id !== id));
 			if (error) throw error;
+			toast.success('Сниппет успешно удален.');
 		} catch (error) {
+			toast.error('Ошибка при удалении сниппета.');
 			console.error('Ошибка при удалении:', error);
 		}
 	};

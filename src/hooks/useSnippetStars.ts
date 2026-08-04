@@ -1,5 +1,6 @@
 import { supabase } from "../utils/supabase";
 import type { snippetCard } from "../components/features/Home/Showcase";
+import { toast } from "sonner";
 
 export const useSnippetStars = (
 	setSnippetsCards: React.Dispatch<React.SetStateAction<snippetCard[] | null>>,
@@ -10,7 +11,7 @@ export const useSnippetStars = (
 		} = await supabase.auth.getUser();
 
 		if (!user) {
-			alert('Пожалуйста, авторизуйтесь, чтобы ставить лайки!');
+			toast.warning('Пожалуйста, авторизуйтесь, чтобы ставить лайки!');
 			return;
 		}
 

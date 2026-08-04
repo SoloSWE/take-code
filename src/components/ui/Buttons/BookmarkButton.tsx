@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Bookmark } from 'lucide-react';
 import { supabase } from '../../../utils/supabase';
+import { toast } from 'sonner';
 
 interface BookmarkButtonProps {
 	snippetId: string;
@@ -32,7 +33,7 @@ export const BookmarkButton = ({ snippetId, userId }: BookmarkButtonProps) => {
 
 	const handleToggleBookmark = async () => {
 		if (!userId) {
-			alert('Авторизуйтесь, чтобы добавлять сниппеты в избранное');
+			toast.warning('Авторизуйтесь, чтобы добавлять сниппеты в избранное');
 			return;
 		}
 
