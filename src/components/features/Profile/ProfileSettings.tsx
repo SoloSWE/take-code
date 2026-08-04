@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { supabase } from '../../utils/supabase';
+import { supabase } from '../../../utils/supabase';
 import type { User } from '@supabase/supabase-js';
 
-import { socialIconsMap, socialMedias } from '../../mocks/mockData';
+import { socialIconsMap, socialMedias } from '../../../mocks/mockData';
 
 import { X, Shield, Save, Link2, User as UserIcon, Camera } from 'lucide-react';
 import { AzureEntraGlobalSecureAccess } from '@thesvg/react';
@@ -354,7 +354,7 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 										Social Medias
 									</label>
 									<ul className='flex items-center gap-2 sm:gap-3 flex-wrap'>
-										{(socialMedias || []).map((socialMedia, index) => {
+										{(socialMedias || []).map((socialMedia: string, index: number) => {
 											const IconComponent =
 												socialIconsMap[socialMedia] ||
 												AzureEntraGlobalSecureAccess;

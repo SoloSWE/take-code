@@ -1,5 +1,5 @@
 import { Copy, Star, TrendingUp } from 'lucide-react';
-import type { snippetCard } from './Showcase';
+import type { snippetCard } from '../Home/Showcase';
 import { Link } from 'react-router-dom';
 
 type Props = {
