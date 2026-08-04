@@ -203,9 +203,9 @@ export const Profile = () => {
 					<div className='flex flex-row items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto pt-2 sm:pt-0 border-t border-[#20273b] sm:border-t-0'>
 						<p className='text-[#64748b] font-mono text-xs sm:text-sm md:text-base whitespace-nowrap'>
 							{selectedCategory === 'My Snippets'
-								? snippetsCount
-								: bookmarkedSnippetsCount}{' '}
-							published
+								? `${snippetsCount.toLocaleString()} created snippets`
+								: `${bookmarkedSnippetsCount.toLocaleString()} saved snippets`
+							}
 						</p>
 						<Link
 							to={'/createSnippet'}
