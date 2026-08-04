@@ -14,6 +14,7 @@ import { Language } from '../ui/Language';
 import { UserTag } from '../ui/UserTag';
 
 import { SnippetSkeleton } from '../ui/Skeletons/SnippetSkeleton';
+import { toast } from 'sonner';
 
 const containerVariants = {
 	hidden: { opacity: 0 },
@@ -59,14 +60,15 @@ export const Snippets = ({
 			});
 		}
 
-		const { data, error } = await supabase.rpc('increment_copied', {
+		const { error } = await supabase.rpc('increment_copied', {
 			row_id: snippetId,
 		});
 
 		if (error) {
 			console.error('Ошибка RPC increment_copied:', error);
+			toast.error('Не удалось обновить счетчик копирований.');
 		} else {
-			console.log('Новое значение copied_count из БД:', data);
+			toast.success('Скопировано в буфер обмена!');
 		}
 	};
 

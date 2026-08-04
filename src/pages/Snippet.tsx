@@ -18,6 +18,7 @@ import { BookmarkButton } from '../components/ui/Buttons/BookmarkButton';
 import { Button } from '../components/ui/Buttons/Button';
 import { CodeBlock } from '../components/ui/CodeBlocks/CodeBlock';
 import { SnippetPageSkeleton } from '../components/ui/Skeletons/SnippetPageSkeleton';
+import { toast } from 'sonner';
 
 interface snippetCard {
 	id: string;
@@ -102,6 +103,7 @@ export const Snippet = () => {
 					.eq('snippet_id', id);
 				if (data) setComments(data);
 			} catch (error) {
+				toast.error('Ошибка при загрузке комментариев. Пожалуйста, попробуйте еще раз.');
 				console.log(error);
 			}
 		}
@@ -151,6 +153,7 @@ export const Snippet = () => {
 					});
 				}
 			} catch (error) {
+				toast.error('Ошибка при загрузке сниппета. Пожалуйста, попробуйте еще раз.');
 				console.error('Ошибка при загрузке сниппета:', error);
 			} finally {
 				setLoading(false);
@@ -168,7 +171,7 @@ export const Snippet = () => {
 		} = await supabase.auth.getUser();
 
 		if (!user) {
-			alert('Авторизуйтесь, чтобы оставлять комментарии!');
+			toast.warning('Авторизуйтесь, чтобы оставлять комментарии!');
 			return;
 		}
 
@@ -206,6 +209,7 @@ export const Snippet = () => {
 				setReplyTo(null);
 			}
 		} catch (error) {
+			toast.error('Ошибка при отправке комментария.');
 			console.error('Ошибка при отправке комментария:', error);
 		}
 	};
@@ -228,6 +232,7 @@ export const Snippet = () => {
 				),
 			);
 		} catch (error) {
+			toast.error('Ошибка при удалении комментария.');
 			console.error('Ошибка при удалении комментария:', error);
 		}
 	};
@@ -238,14 +243,14 @@ export const Snippet = () => {
 			setTimeout(() => setCopied(false), 2000);
 		});
 
-		const { data, error } = await supabase.rpc('increment_copied', {
+		const { error } = await supabase.rpc('increment_copied', {
 			row_id: snippetId,
 		});
 
 		if (error) {
 			console.error('Ошибка RPC increment_copied:', error);
 		} else {
-			console.log('Новое значение copied_count из БД:', data);
+			toast.success('Скопировано в буфер обмена!');
 		}
 	};
 
@@ -275,7 +280,7 @@ export const Snippet = () => {
 		} = await supabase.auth.getUser();
 
 		if (!user) {
-			alert('Пожалуйста, авторизуйтесь, чтобы ставить лайки!');
+			toast.warning('Пожалуйста, авторизуйтесь, чтобы ставить лайки!');
 			return;
 		}
 
@@ -297,7 +302,7 @@ export const Snippet = () => {
 				.eq('snippet_id', snippetId)
 				.eq('user_id', user.id);
 
-			if (error) console.error('Ошибка при удалении лайка:', error);
+			if (error) toast.error('Ошибка при удалении лайка.');
 		} else {
 			const { error } = await supabase
 				.from('snippets_stars')
@@ -306,7 +311,7 @@ export const Snippet = () => {
 					{ onConflict: 'user_id, snippet_id' },
 				);
 
-			if (error) console.error('Ошибка при добавлении лайка:', error);
+			if (error) toast.error('Ошибка при добавлении лайка.');
 		}
 	};
 

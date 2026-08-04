@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CodeEditor } from '../components/ui/CodeBlocks/CodeEditor';
 import { supabase } from '../utils/supabase';
+import { toast } from 'sonner';
 
 type OptionItem = {
 	id: string;
@@ -95,8 +96,8 @@ export const EditSnippet = () => {
 					setSelectedDependencyIds(activeIds);
 				}
 			} catch (err) {
+				toast.error('Не удалось загрузить сниппет.');
 				console.error('Error loading snippet:', err);
-				alert('Failed to load snippet data');
 			} finally {
 				setLoading(false);
 			}
@@ -149,8 +150,8 @@ export const EditSnippet = () => {
 				setIsAddingCustomDep(false);
 			}
 		} catch (err) {
+			toast.error('Ошибка при добавлении зависимости. Пожалуйста, попробуйте еще раз.');
 			console.error('Error adding custom dependency:', err);
-			alert('Failed to add custom dependency');
 		}
 	};
 
@@ -200,10 +201,11 @@ export const EditSnippet = () => {
 				if (insertDepError) throw insertDepError;
 			}
 
+			toast.success('Сниппет успешно обновлен!');
 			navigate(`/snippet/${id}`);
 		} catch (error) {
+			toast.error(`Ошибка при обновлении сниппета. Пожалуйста, попробуйте еще раз.`);
 			console.error('Update error:', error);
-			alert(`Supabase error: ${error}`);
 		} finally {
 			setLoading(false);
 		}

@@ -7,6 +7,7 @@ import { supabase } from '../../utils/supabase';
 import { cn } from '../../utils/cn';
 import { useCloseDropdown } from '../../hooks/useCloseDropDown';
 import type { UserProfile } from '../../pages/Profile';
+import { toast } from 'sonner';
 
 interface AuntatificatedUserMenuProps {
 	user: UserProfile | null;
@@ -22,6 +23,7 @@ export const AuntatificatedUserMenu = ({
 	const signOut = async () => {
 		await supabase.auth.signOut();
 		setActive(false);
+		toast.success('Вы успешно вышли из системы.');
 		navigate('/');
 	};
 

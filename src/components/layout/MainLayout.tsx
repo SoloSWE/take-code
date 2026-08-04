@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { Toaster } from 'sonner';
 
 
 export const MainLayout = () => {
@@ -13,6 +14,16 @@ export const MainLayout = () => {
 				<Outlet />
 			</div>
 
+			<Toaster
+				position='top-right'
+				toastOptions={{
+					style: {
+						background: '#0b1220',
+						color: '#FFFFFF',
+						borderColor: '#222b3e',
+					},
+				}}
+			/>
 			<Footer />
 		</div>
 	);

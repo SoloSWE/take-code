@@ -7,6 +7,7 @@ import { SmallFilterLanguagesLoader } from '../ui/Loaders/SmallFilterLanguagesLo
 import { SmallFilterFWTagsLoader } from '../ui/Loaders/SmallFilterFWTagsLoader';
 
 import type { languagesT, frameworksT, tagsT } from '../../pages/ExploreHub';
+import { toast } from 'sonner';
 
 type Props = {
 	languages: languagesT[] | null;
@@ -72,6 +73,7 @@ export const SmartSnippetsFilters = ({
 					setLanguageFrameworks(data);
 					setLoadingFrameworks(false);
 				} catch (error) {
+					toast.error('Не удалось загрузить фреймворки.');
 					console.log(error);
 				}
 			}
@@ -92,6 +94,7 @@ export const SmartSnippetsFilters = ({
 						setLanguageTags(data);
 						setLoadingTags(false);
 					} catch (error) {
+						toast.error('Не удалось загрузить теги.');
 						console.log(error);
 					}
 				}

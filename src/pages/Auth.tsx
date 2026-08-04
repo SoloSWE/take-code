@@ -8,6 +8,7 @@ import { cn } from '../utils/cn';
 
 import { Braces } from 'lucide-react';
 import { Github, Google } from '@thesvg/react';
+import { toast } from 'sonner';
 
 export const Auth = () => {
 	const navigate = useNavigate();
@@ -24,21 +25,26 @@ export const Auth = () => {
 
 		try {
 			if (!isCreateMode) {
-				const { data, error } = await supabase.auth.signInWithPassword({
+				// Вход по логину и паролю
+				const { error } = await supabase.auth.signInWithPassword({
 					email,
 					password,
 				});
-				if (error) throw error;
 
-				console.log('Success', data.user);
+				
+				if (error) throw error;
+				
+				toast.success('Вход выполнен успешно!');
+
 				navigate('/');
 			} else {
-				const { error } = await supabase.auth.signUp({
+				// Регистрация
+				const { data, error } = await supabase.auth.signUp({
 					email,
 					password,
 					options: {
 						data: {
-							username: username,
+							username,
 							display_name: username,
 						},
 					},
@@ -46,11 +52,18 @@ export const Auth = () => {
 
 				if (error) throw error;
 
-				console.log('Регистрация успешна!');
-				navigate('/');
+				// Если в Supabase включен Email Confirmation
+				if (data?.user && data.session === null) {
+					toast.info('Проверьте почту для подтверждения аккаунта!');
+				} else {
+					toast.success('Регистрация успешна!');
+					navigate('/');
+				}
 			}
 		} catch (error) {
-			console.log(error);
+			// Показываем реальное сообщение ошибки от Supabase на английском или понятный дефолт
+			toast.error('Произошла ошибка при авторизации.');
+			console.error('Auth error:', error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -59,16 +72,17 @@ export const Auth = () => {
 	const authWithGitHub = async () => {
 		setIsLoading(true);
 		try {
-			await supabase.auth.signInWithOAuth({
+			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'github',
 				options: {
-					redirectTo:
-						'https://uhzqqqcvugfwcolpgagv.supabase.co/auth/v1/callback',
+					redirectTo: `${window.location.origin}/`,
 				},
 			});
+
+			if (error) throw error;
 		} catch (error) {
-			console.log(error);
-		} finally {
+			toast.error('Ошибка авторизации через GitHub.');
+			console.error('GitHub auth error:', error);
 			setIsLoading(false);
 		}
 	};
@@ -76,16 +90,17 @@ export const Auth = () => {
 	const authWithGoogle = async () => {
 		setIsLoading(true);
 		try {
-			await supabase.auth.signInWithOAuth({
+			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
-					redirectTo:
-						'https://uhzqqqcvugfwcolpgagv.supabase.co/auth/v1/callback',
+					redirectTo: `${window.location.origin}/`,
 				},
 			});
+
+			if (error) throw error;
 		} catch (error) {
-			console.log(error);
-		} finally {
+			toast.error('Ошибка авторизации через Google.');
+			console.error('Google auth error:', error);
 			setIsLoading(false);
 		}
 	};

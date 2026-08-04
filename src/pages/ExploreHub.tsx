@@ -20,6 +20,7 @@ import { SortDropdown } from '../components/features/SortDropDown';
 
 import type { snippetCard } from '../components/features/Home/Showcase';
 import { Snippets } from '../components/features/Snippets';
+import { toast } from 'sonner';
 
 export type languagesT = {
 	id: string;
@@ -101,6 +102,7 @@ export const ExploreHub = () => {
 				setFrameworks(frameworksRes.data || []);
 				setTags(tagsRes.data || []);
 			} catch (error) {
+				toast.error('Ошибка загрузки справочников.');
 				console.error('Ошибка загрузки справочников:', error);
 			} finally {
 				setLoading(false);
@@ -219,6 +221,7 @@ export const ExploreHub = () => {
 				const { data, count, error } = await query;
 
 				if (error) {
+					toast.error('Ошибка при загрузке сниппетов. Пожалуйста, попробуйте еще раз.');
 					console.error('Ошибка Supabase:', error);
 					setSnippets([]);
 					return;
@@ -242,6 +245,9 @@ export const ExploreHub = () => {
 					setSnippets([]);
 				}
 			} catch (err) {
+				toast.error(
+					'Ошибка при загрузке сниппетов. Пожалуйста, попробуйте еще раз.',
+				);
 				console.error('Ошибка при загрузке:', err);
 				setSnippets([]);
 			} finally {

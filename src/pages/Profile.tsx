@@ -16,6 +16,7 @@ import { UserBookmarkedSnippetsList } from '../components/features/Profile/Profi
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
 import { cn } from '../utils/cn';
+import { toast } from 'sonner';
 
 export interface SocialMedia {
 	id: number;
@@ -79,6 +80,7 @@ export const Profile = () => {
 						setUserProfile(data[0]);
 					}
 				} catch (error) {
+					toast.error('Ошибка при загрузке профиля. Пожалуйста, попробуйте еще раз.');
 					console.error(error);
 				} finally {
 					setLoading(false);
@@ -122,6 +124,7 @@ export const Profile = () => {
 					) || 0,
 				);
 			} catch (error) {
+				toast.error('Ошибка при загрузке сниппетов. Пожалуйста, попробуйте еще раз.');
 				console.error('Error fetching featured snippets:', error);
 				console.error('Error fetching snippet copies:', error);
 			} finally {

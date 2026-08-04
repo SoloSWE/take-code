@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CodeEditor } from '../components/ui/CodeBlocks/CodeEditor';
 import { supabase } from '../utils/supabase';
+import { toast } from 'sonner';
 
 export type OptionItem = {
 	id: string;
@@ -76,6 +77,7 @@ export const CreateSnippet = () => {
 				if (depRes.data) setDependenciesList(depRes.data);
 				if (tagsRes.data) setTagsList(tagsRes.data);
 			} catch (err) {
+				toast.error('Произошла ошибка при загрузке метаданных. Пожалуйста, попробуйте еще раз.');
 				console.error('Ошибка загрузки метаданных:', err);
 			}
 		}
@@ -130,8 +132,8 @@ export const CreateSnippet = () => {
 				.single();
 
 			if (error) {
+				toast.warning('Ошибка при создании зависимости.');
 				console.error('Ошибка добавления зависимости:', error);
-				alert(`Ошибка при создании зависимости: ${error.message}`);
 				return;
 			}
 
@@ -143,6 +145,7 @@ export const CreateSnippet = () => {
 				setIsAddingCustomDep(false);
 			}
 		} catch (err) {
+			toast.error('Произошла ошибка при создании зависимости. Пожалуйста, попробуйте еще раз.');
 			console.error('Ошибка:', err);
 		}
 	};
@@ -150,7 +153,7 @@ export const CreateSnippet = () => {
 	// Отправка формы в Supabase
 	const handleSubmit = async () => {
 		if (!title.trim() || !code.trim()) {
-			alert('Заполните название и код!');
+			toast.warning('Заполните название и код!');
 			return;
 		}
 
@@ -162,7 +165,7 @@ export const CreateSnippet = () => {
 			} = await supabase.auth.getUser();
 
 			if (!user) {
-				alert('Вы должны быть авторизованы!');
+				toast.warning('Вы должны быть авторизованы, чтобы создать сниппет.');
 				return;
 			}
 
@@ -201,10 +204,11 @@ export const CreateSnippet = () => {
 				}
 			}
 
+			toast.success('Сниппет успешно сохранен!');
 			navigate(`/snippet/${snippet.id}`);
 		} catch (err) {
+			toast.error('Произошла ошибка при сохранении сниппета. Пожалуйста, попробуйте еще раз.');
 			console.error('Ошибка сохранения:', err);
-			alert(`Ошибка Supabase [${err || 'Error'}]: ${err}`);
 		} finally {
 			setLoading(false);
 		}

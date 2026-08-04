@@ -7,6 +7,7 @@ import { socialIconsMap, socialMedias } from '../../../mocks/mockData';
 
 import { X, Shield, Save, Link2, User as UserIcon, Camera } from 'lucide-react';
 import { AzureEntraGlobalSecureAccess } from '@thesvg/react';
+import { toast } from 'sonner';
 
 interface ProfileSettingsProps {
 	user: User | null;
@@ -65,8 +66,8 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 						setSelectedSocials(socialsObject);
 					}
 				}
-			} catch (error) {
-				console.error('Ошибка загрузки профиля:', error);
+			} catch {
+				toast.error('Ошибка загрузки профиля.');
 			}
 		};
 
@@ -98,8 +99,8 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 			if (error) throw error;
 			onClose();
 		} catch (error) {
+			toast.error('Не удалось сохранить изменения');
 			console.error('Error updating profile:', error);
-			alert('Не удалось сохранить изменения');
 		} finally {
 			setIsSaving(false);
 		}
@@ -107,12 +108,12 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 
 	const updateSecurity = async () => {
 		if (!newPassword) {
-			alert('Введите новый пароль');
+			toast.warning('Введите новый пароль');
 			return;
 		}
 
 		if (newPassword !== confirmPassword) {
-			alert('Пароли не совпадают!');
+			toast.error('Пароли не совпадают!');
 			return;
 		}
 
@@ -123,11 +124,11 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 			});
 
 			if (error) throw error;
-			alert('Пароль успешно обновлен');
+			toast.success('Пароль успешно обновлен');
 			onClose();
 		} catch (error) {
+			toast.error(`Ошибка обновления пароля.`);
 			console.error('Error updating password:', error);
-			alert(`Ошибка обновления пароля: ${error}`);
 		} finally {
 			setIsSaving(false);
 		}
@@ -138,11 +139,17 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 			if (!e.target.files || e.target.files.length === 0) return;
 			const file = e.target.files[0];
 
+			// Проверка размера (например, до 5MB)
+			if (file.size > 5 * 1024 * 1024) {
+				toast.error('Размер файла не должен превышать 5MB');
+				return;
+			}
+
 			const { data: authData, error: authError } =
 				await supabase.auth.getUser();
 
 			if (authError || !authData.user) {
-				alert('Сессия истекла. Пожалуйста, войдите снова.');
+				toast.error('Сессия истекла. Пожалуйста, войдите снова.');
 				return;
 			}
 
@@ -150,36 +157,51 @@ export const ProfileSettings = ({ onClose, user }: ProfileSettingsProps) => {
 			const fileExt = file.name.split('.').pop();
 			const filePath = `${userId}/${Date.now()}.${fileExt}`;
 
-			const { error: uploadError } = await supabase.storage
-				.from('avatars')
-				.upload(filePath, file, {
-					upsert: true,
-					contentType: file.type,
-				});
+			// Функция, выполняющая весь пайплайн загрузки и обновления
+			const uploadPipeline = async () => {
+				// 1. Загрузка аватарки в Storage
+				const { error: uploadError } = await supabase.storage
+					.from('avatars')
+					.upload(filePath, file, {
+						upsert: true,
+						contentType: file.type,
+					});
 
-			if (uploadError) {
-				alert(`Не удалось загрузить фото: ${uploadError.message}`);
-				return;
-			}
+				if (uploadError) throw uploadError;
 
-			const { data: urlData } = supabase.storage
-				.from('avatars')
-				.getPublicUrl(filePath);
+				// 2. Получение публичной ссылки
+				const { data: urlData } = supabase.storage
+					.from('avatars')
+					.getPublicUrl(filePath);
 
-			const publicUrl = urlData.publicUrl;
+				const publicUrl = urlData.publicUrl;
 
-			const { error: updateError } = await supabase
-				.from('profiles')
-				.update({ avatar_url: publicUrl })
-				.eq('id', userId);
+				// 3. Обновление таблицы profiles
+				const { error: updateError } = await supabase
+					.from('profiles')
+					.update({ avatar_url: publicUrl })
+					.eq('id', userId);
 
-			if (updateError) {
-				console.error('Ошибка обновления profiles:', updateError.message);
-				return;
-			}
+				if (updateError) throw updateError;
 
-			setAvatarUrl(publicUrl);
+				// Возвращаем ссылку для обновления стейта
+				return publicUrl;
+			};
+
+			// Связываем toast.promise с полным процессом
+			toast.promise(uploadPipeline(), {
+				loading: 'Загрузка аватара...',
+				success: publicUrl => {
+					setAvatarUrl(publicUrl);
+					return 'Аватар успешно обновлён!';
+				},
+				error: err => {
+					console.error('Ошибка загрузки:', err);
+					return 'Не удалось обновить аватар.';
+				},
+			});
 		} catch (err) {
+			toast.error('Произошла непредвиденная ошибка.');
 			console.error('Непредвиденная ошибка:', err);
 		}
 	};
