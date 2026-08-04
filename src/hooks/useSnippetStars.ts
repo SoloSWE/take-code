@@ -1,5 +1,5 @@
 import { supabase } from "../utils/supabase";
-import type { snippetCard } from "../components/features/Showcase";
+import type { snippetCard } from "../components/features/Home/Showcase";
 
 export const useSnippetStars = (
 	setSnippetsCards: React.Dispatch<React.SetStateAction<snippetCard[] | null>>,

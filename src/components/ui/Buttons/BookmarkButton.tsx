@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bookmark } from 'lucide-react';
-import { supabase } from '../../utils/supabase';
+import { supabase } from '../../../utils/supabase';
 
 interface BookmarkButtonProps {
 	snippetId: string;

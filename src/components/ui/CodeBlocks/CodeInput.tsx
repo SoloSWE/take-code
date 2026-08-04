@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { codeToHtml } from 'shiki';
-import { CodeLoader } from './Loaders/CodeLoader';
+import { CodeLoader } from '../Loaders/CodeLoader';
 
 type CodeInputProps = {
 	code: string;

@@ -1,8 +1,8 @@
 import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { type VariantProps } from 'class-variance-authority';
 
-import { cn } from '../../utils/cn';
-import { buttonVariants } from './ButtonVariants';
+import { cn } from '../../../utils/cn';
+import { buttonVariants } from '../../ui/Buttons/ButtonVariants';
 
 export function PaginationButton({
 	className,

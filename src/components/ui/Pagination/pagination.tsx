@@ -6,7 +6,7 @@ import {
 	MoreHorizontalIcon,
 } from 'lucide-react';
 import { cn } from '../../../utils/cn';
-import { PaginationButton } from '../../components/ui/PaginationButton';
+import { PaginationButton } from '../../../components/ui/Pagination/PaginationButton';
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
 	return (
@@ -85,7 +85,6 @@ function PaginationPrevious({
 	return (
 		<PaginationLink
 			aria-label='Go to previous page'
-			size='default'
 			className={cn('px-3.5 py-2 h-auto gap-1.5', className)}
 			{...props}
 		>
@@ -106,7 +105,6 @@ function PaginationNext({
 	return (
 		<PaginationLink
 			aria-label='Go to next page'
-			size='default'
 			className={cn('px-3.5 py-2 h-auto gap-1.5', className)}
 			{...props}
 		>

@@ -30,8 +30,8 @@ export interface UserProfile {
 	display_name: string;
 	about: string;
 	speciality: string;
-	tag: string;
-	social_medias: SocialMedia[];
+	tag: string
+	social_medias: SocialMedia[]
 }
 
 export const Profile = () => {
