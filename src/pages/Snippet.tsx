@@ -13,8 +13,8 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { cn } from '../utils/cn';
 import { supabase } from '../utils/supabase';
 
-import type { dependencyT } from '../components/features/Showcase';
-import { BookmarkButton } from '../components/ui/BookmarkButton';
+import type { dependencyT } from '../components/features/Home/Showcase';
+import { BookmarkButton } from '../components/ui/Buttons/BookmarkButton';
 import { Button } from '../components/ui/Buttons/Button';
 import { CodeBlock } from '../components/ui/CodeBlocks/CodeBlock';
 import { SnippetPageSkeleton } from '../components/ui/Skeletons/SnippetPageSkeleton';

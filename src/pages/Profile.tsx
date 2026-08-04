@@ -5,14 +5,14 @@ import { supabase } from '../utils/supabase';
 
 import { Bookmark, Code2 } from 'lucide-react';
 
-import { ProfileAbout } from '../components/features/ProfileAbout';
-import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
-import { ProfileSettings } from '../components/features/ProfileSettings';
-import type { snippetCard } from '../components/features/Showcase';
+import { ProfileAbout } from '../components/features/Profile/ProfileAbout';
+import { ProfileFeaturedSnippets } from '../components/features/Profile/ProfileFeaturedSnippets';
+import { ProfileSettings } from '../components/features/Profile/ProfileSettings';
+import type { snippetCard } from '../components/features/Home/Showcase';
 
 import { Link } from 'react-router-dom';
 import { UserSnippetsList } from '../components/features/Profile/ProfileSnippet/UserSnippetsList';
-import { UserBookmarkedSnippetsList } from '../components/features/UserBookmarkedSnippetsList';
+import { UserBookmarkedSnippetsList } from '../components/features/Profile/ProfileBookmark/UserBookmarkedSnippetsList';
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
 import { cn } from '../utils/cn';

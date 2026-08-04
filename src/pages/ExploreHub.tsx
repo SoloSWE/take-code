@@ -18,7 +18,7 @@ import { Filter, Search, SlidersHorizontal, X } from 'lucide-react';
 import { SmartSnippetsFilters } from '../components/features/SmartSnippetsFilters';
 import { SortDropdown } from '../components/features/SortDropDown';
 
-import type { snippetCard } from '../components/features/Showcase';
+import type { snippetCard } from '../components/features/Home/Showcase';
 import { Snippets } from '../components/features/Snippets';
 
 export type languagesT = {
@@ -433,17 +433,14 @@ export const ExploreHub = () => {
 										<PaginationContent>
 											<PaginationItem>
 												<PaginationPrevious
-													onClick={e => {
-														e.preventDefault();
-														if (currentPage > 1)
-															handlePageChange(currentPage - 1);
-													}}
-													className={
-														currentPage === 1
-															? 'pointer-events-none opacity-40'
-															: 'cursor-pointer'
-													}
-												/>
+												onClick={e => {
+													e.preventDefault();
+													if (currentPage > 1)
+														handlePageChange(currentPage - 1);
+												} }
+												className={currentPage === 1
+													? 'pointer-events-none opacity-40'
+													: 'cursor-pointer'} size={undefined}												/>
 											</PaginationItem>
 
 											{Array.from({ length: totalPages }, (_, i) => i + 1).map(
@@ -454,9 +451,8 @@ export const ExploreHub = () => {
 															onClick={e => {
 																e.preventDefault();
 																handlePageChange(page);
-															}}
-															className='cursor-pointer'
-														>
+															} }
+															className='cursor-pointer' size={undefined}														>
 															{page}
 														</PaginationLink>
 													</PaginationItem>
@@ -465,17 +461,14 @@ export const ExploreHub = () => {
 
 											<PaginationItem>
 												<PaginationNext
-													onClick={e => {
-														e.preventDefault();
-														if (currentPage < totalPages)
-															handlePageChange(currentPage + 1);
-													}}
-													className={
-														currentPage === totalPages
-															? 'pointer-events-none opacity-40'
-															: 'cursor-pointer'
-													}
-												/>
+												onClick={e => {
+													e.preventDefault();
+													if (currentPage < totalPages)
+														handlePageChange(currentPage + 1);
+												} }
+												className={currentPage === totalPages
+													? 'pointer-events-none opacity-40'
+													: 'cursor-pointer'} size={undefined}												/>
 											</PaginationItem>
 										</PaginationContent>
 									</Pagination>

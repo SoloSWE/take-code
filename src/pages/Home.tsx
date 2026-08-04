@@ -1,6 +1,6 @@
-import { Hero } from '../components/features/Hero';
-import { Showcase } from '../components/features/Showcase';
-import { TrendingActivites } from '../components/features/TrendingActivites';
+import { Hero } from '../components/features/Home/Hero';
+import { Showcase } from '../components/features/Home/Showcase';
+import { TrendingActivites } from '../components/features/Home/TrendingActivites';
 
 export const Home = () => {
 	return (

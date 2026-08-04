@@ -6,8 +6,8 @@ import { supabase } from '../utils/supabase';
 
 import { AzureEntraGlobalSecureAccess } from '@thesvg/react';
 
-import { ProfileFeaturedSnippets } from '../components/features/ProfileFeaturedSnippets';
-import type { snippetCard } from '../components/features/Showcase';
+import { ProfileFeaturedSnippets } from '../components/features/Profile/ProfileFeaturedSnippets';
+import type { snippetCard } from '../components/features/Home/Showcase';
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
 
