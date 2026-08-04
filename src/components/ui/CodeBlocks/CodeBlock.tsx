@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { codeToHtml } from 'shiki'
-import { CodeLoader } from './Loaders/CodeLoader';
+import { codeToHtml } from 'shiki';
+import { CodeLoader } from '../Loaders/CodeLoader';
 
 type CodeBlockProps = {
-    code: string;
-    language: string;
+	code: string;
+	language: string;
 };
 
 export const CodeBlock = ({ code, language }: CodeBlockProps) => {

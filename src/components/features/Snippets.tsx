@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Star } from 'lucide-react';
+import { useState } from 'react';
 
-import { Language } from '../ui/Language';
+import { Button } from '../ui/Buttons/Button';
 import { CodeInput } from '../ui/CodeInput';
+import { Language } from '../ui/Language';
 import { UserTag } from '../ui/UserTag';
-import { Button } from '../ui/Button';
 
 import { SnippetSkeleton } from '../ui/Skeletons/SnippetSkeleton';
 
-import type { snippetCard } from './Showcase';
-import { supabase } from '../../utils/supabase';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../utils/supabase';
+import type { snippetCard } from './Showcase';
 
 const containerVariants = {
 	hidden: { opacity: 0 },

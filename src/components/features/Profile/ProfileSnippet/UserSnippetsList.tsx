@@ -8,7 +8,7 @@ import {
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-} from '../../../ui/pagination';
+} from '../../../ui/Pagination/pagination';
 import { SnippetSkeleton } from '../../../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
 import type { snippetCard } from '../../Showcase';
 import { UserSnippetCard } from './UserSnippetCard';

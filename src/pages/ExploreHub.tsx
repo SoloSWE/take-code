@@ -8,7 +8,7 @@ import {
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-} from '../components/ui/pagination';
+} from '../components/ui/Pagination/pagination';
 
 import { cn } from '../utils/cn';
 import { supabase } from '../utils/supabase';

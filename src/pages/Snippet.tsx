@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
 import {
 	Check,
 	Copy,
@@ -9,15 +7,17 @@ import {
 	Trash2,
 	X,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { cn } from '../utils/cn';
 import { supabase } from '../utils/supabase';
 
-import { Button } from '../components/ui/Button';
-import { CodeBlock } from '../components/ui/CodeBlock';
 import type { dependencyT } from '../components/features/Showcase';
-import { SnippetPageSkeleton } from '../components/ui/Skeletons/SnippetPageSkeleton';
 import { BookmarkButton } from '../components/ui/BookmarkButton';
+import { Button } from '../components/ui/Buttons/Button';
+import { CodeBlock } from '../components/ui/CodeBlocks/CodeBlock';
+import { SnippetPageSkeleton } from '../components/ui/Skeletons/SnippetPageSkeleton';
 
 interface snippetCard {
 	id: string;

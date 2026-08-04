@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
 	ArrowLeft,
-	Sparkles,
-	Code2,
-	Plus,
-	X,
-	CheckCircle2,
-	Layers,
-	FileText,
 	Box,
+	CheckCircle2,
+	Code2,
+	FileText,
+	Layers,
+	Plus,
+	Sparkles,
 	Tag,
+	X,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CodeEditor } from '../components/ui/CodeBlocks/CodeEditor';
 import { supabase } from '../utils/supabase';
-import { CodeEditor } from '../components/ui/CodeEditor';
 
 export type OptionItem = {
 	id: string;

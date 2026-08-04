@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CodeEditor } from '../components/ui/CodeEditor';
+import { CodeEditor } from '../components/ui/CodeBlocks/CodeEditor';
 import { supabase } from '../utils/supabase';
 
 type OptionItem = {
