@@ -1,15 +1,15 @@
 import { Route, Routes } from "react-router-dom";
 
-import { Home } from "./pages/Home";
 import { Auth } from "./pages/Auth";
+import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
-import { CreateSnippet } from "./pages/CreateSnippet";
 import { PublicProfile } from "./pages/PublicProfile";
 import { ExploreHub } from "./pages/ExploreHub";
 import { Snippet } from "./pages/Snippet";
+import { CreateSnippet } from "./pages/CreateSnippet";
+import { EditSnippet } from "./pages/EditSnippet";
 
 import { MainLayout } from "./components/layout/MainLayout";
-import { EditSnippet } from "./pages/EditSnippet";
 
 export const App = () => {
 	return (

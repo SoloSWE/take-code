@@ -11,8 +11,8 @@ import { ProfileSettings } from '../components/features/ProfileSettings';
 import type { snippetCard } from '../components/features/Showcase';
 
 import { Link } from 'react-router-dom';
+import { UserSnippetsList } from '../components/features/Profile/ProfileSnippet/UserSnippetsList';
 import { UserBookmarkedSnippetsList } from '../components/features/UserBookmarkedSnippetsList';
-import { UserSnippetsList } from '../components/features/UserSnippetsList';
 import { ProfileFeaturedSnippetsLoader } from '../components/ui/Loaders/ProfileFeaturedSnippetsLoader';
 import { ProflieAboutLoader } from '../components/ui/Loaders/ProflieAboutLoader';
 import { cn } from '../utils/cn';

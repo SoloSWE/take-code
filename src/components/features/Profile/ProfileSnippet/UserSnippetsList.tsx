@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../utils/supabase';
+import { supabase } from '../../../../utils/supabase';
 import {
 	Pagination,
 	PaginationContent,
@@ -8,9 +8,9 @@ import {
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-} from '../ui/pagination';
-import { SnippetSkeleton } from '../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
-import type { snippetCard } from './Showcase';
+} from '../../../ui/pagination';
+import { SnippetSkeleton } from '../../../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
+import type { snippetCard } from '../../Showcase';
 import { UserSnippetCard } from './UserSnippetCard';
 
 export const UserSnippetsList = () => {
