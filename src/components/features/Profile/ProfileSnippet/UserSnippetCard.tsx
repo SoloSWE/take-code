@@ -1,6 +1,6 @@
 import { Edit2, Trash2, Star } from 'lucide-react';
-import type { snippetCard } from './Showcase';
-import { Language } from '../ui/Language';
+import type { snippetCard } from '../../Home/Showcase';
+import { Language } from '../../../ui/Language';
 import { Link } from 'react-router-dom';
 
 interface UserSnippetCardProps {

@@ -5,9 +5,9 @@ import { codeToHtml } from 'shiki';
 
 import { Sparkles } from 'lucide-react';
 
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
-import { CodeLoader } from '../ui/Loaders/CodeLoader';
+import { Input } from '../../ui/Input';
+import { Button } from '../../ui/Buttons/Button';
+import { CodeLoader } from '../../ui/Loaders/CodeLoader';
 
 const snippetCode = `export function copySnippet(source: string) {
 	return navigator.clipboard.writeText(source)

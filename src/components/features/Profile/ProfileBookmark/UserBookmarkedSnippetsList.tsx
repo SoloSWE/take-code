@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../utils/supabase';
+import { supabase } from '../../../../utils/supabase';
 import {
     Pagination,
     PaginationContent,
@@ -7,9 +7,9 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from '../ui/pagination';
-import { SnippetSkeleton } from '../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
-import type { snippetCard } from './Showcase';
+} from '../../../ui/Pagination/pagination';
+import { SnippetSkeleton } from '../../../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
+import type { snippetCard } from '../../Home/Showcase';
 import { UserBookmarkedSnippetsCard } from './UserBookmarkedSnippetsCard';
 
 type BookmarkedSnippet = {
@@ -103,11 +103,8 @@ export const UserBookmarkedSnippetsList = () => {
 									onClick={e => {
 										e.preventDefault();
 										if (currentPage > 1) setCurrentPage(prev => prev - 1);
-									}}
-									className={
-										currentPage === 1 ? 'pointer-events-none opacity-40' : ''
-									}
-								/>
+									} }
+									className={currentPage === 1 ? 'pointer-events-none opacity-40' : ''} size={undefined}								/>
 							</PaginationItem>
 
 							{Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -117,8 +114,7 @@ export const UserBookmarkedSnippetsList = () => {
 										onClick={e => {
 											e.preventDefault();
 											setCurrentPage(page);
-										}}
-									>
+										} } size={undefined}									>
 										{page}
 									</PaginationLink>
 								</PaginationItem>
@@ -130,13 +126,10 @@ export const UserBookmarkedSnippetsList = () => {
 										e.preventDefault();
 										if (currentPage < totalPages)
 											setCurrentPage(prev => prev + 1);
-									}}
-									className={
-										currentPage === totalPages
-											? 'pointer-events-none opacity-40'
-											: ''
-									}
-								/>
+									} }
+									className={currentPage === totalPages
+										? 'pointer-events-none opacity-40'
+										: ''} size={undefined}								/>
 							</PaginationItem>
 						</PaginationContent>
 					</Pagination>

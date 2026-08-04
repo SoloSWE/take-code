@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { cn } from '../../utils/cn';
+import { cn } from '../../../utils/cn';
 
-import { supabase } from '../../utils/supabase';
+import { supabase } from '../../../utils/supabase';
 import { FeaturCards } from './FeaturCards';
-import { Snippets } from './Snippets';
+import { Snippets } from '../Snippets';
 
 const categories = [
 	{
@@ -117,7 +117,7 @@ export const Showcase = () => {
 			const { data, error } = await query;
 
 			if (!error && data) {
-				const formattedData = data.map(item => {
+				const formattedData = data.map((item) => {
 					const hasStarred =
 						Array.isArray(item.snippets_stars) &&
 						item.snippets_stars.some(

@@ -1,8 +1,8 @@
 import { UsersIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import type { UserProfile } from '../../pages/Profile';
-import { supabase } from '../../utils/supabase';
 import { Link } from 'react-router-dom';
+import type { UserProfile } from '../../../pages/Profile';
+import { supabase } from '../../../utils/supabase';
 
 type AuthorWithStats = UserProfile & {
 	snippetsCount: number;
@@ -28,26 +28,32 @@ export const TrendingActivites = () => {
 
 				if (profilesData) {
 					// Форматируем данные: считаем количество сниппетов и общие копии
-					const formattedAuthors: AuthorWithStats[] = profilesData.map(
-						author => {
-							const snippets = Array.isArray(author.snippets)
-								? author.snippets
-								: [];
+					const formattedAuthors: AuthorWithStats[] = (
+						profilesData as UserProfile[]
+					).map((authorRaw: UserProfile) => {
+						// authorRaw contains profile fields plus snippets array
+						const author = authorRaw as UserProfile & {
+							snippets?: { copied_count?: number }[];
+						};
 
-							const snippetsCount = snippets.length;
-							const totalCopies = snippets.reduce(
-								(sum: number, snip: { copied_count?: number }) =>
-									sum + (snip.copied_count || 0),
-								0,
-							);
+						const snippets = Array.isArray(author.snippets)
+							? author.snippets
+							: [];
 
-							return {
-								...author,
-								snippetsCount,
-								totalCopies,
-							};
-						},
-					);
+						const snippetsCount = snippets.length;
+						const totalCopies = snippets.reduce(
+							(sum: number, snip: { copied_count?: number }) =>
+								sum + (snip.copied_count || 0),
+							0,
+						);
+
+						// spread the original author to preserve all UserProfile fields (including tag, social_medias)
+						return {
+							...author,
+							snippetsCount,
+							totalCopies,
+						} as AuthorWithStats;
+					});
 
 					// 2. СОРТИРОВКА: от большего количества сниппетов к меньшему
 					formattedAuthors.sort((a, b) => b.snippetsCount - a.snippetsCount);
@@ -63,7 +69,8 @@ export const TrendingActivites = () => {
 
 				if (snippetsData) {
 					const allCopiesSum = snippetsData.reduce(
-						(sum, snippet) => sum + (snippet.copied_count || 0),
+						(sum: number, snippet: { copied_count?: number }) =>
+							sum + (snippet.copied_count || 0),
 						0,
 					);
 					setTotalCopies(allCopiesSum);

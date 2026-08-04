@@ -10,7 +10,7 @@ import {
 	PaginationPrevious,
 } from '../../../ui/Pagination/pagination';
 import { SnippetSkeleton } from '../../../ui/Skeletons/SnippetSkeleton'; // или твой скелетон
-import type { snippetCard } from '../../Showcase';
+import type { snippetCard } from '../../Home/Showcase';
 import { UserSnippetCard } from './UserSnippetCard';
 
 export const UserSnippetsList = () => {
@@ -115,11 +115,8 @@ export const UserSnippetsList = () => {
 									onClick={e => {
 										e.preventDefault();
 										if (currentPage > 1) setCurrentPage(prev => prev - 1);
-									}}
-									className={
-										currentPage === 1 ? 'pointer-events-none opacity-40' : ''
-									}
-								/>
+									} }
+									className={currentPage === 1 ? 'pointer-events-none opacity-40' : ''} size={undefined}								/>
 							</PaginationItem>
 
 							{Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -129,8 +126,7 @@ export const UserSnippetsList = () => {
 										onClick={e => {
 											e.preventDefault();
 											setCurrentPage(page);
-										}}
-									>
+										} } size={undefined}									>
 										{page}
 									</PaginationLink>
 								</PaginationItem>
@@ -142,13 +138,10 @@ export const UserSnippetsList = () => {
 										e.preventDefault();
 										if (currentPage < totalPages)
 											setCurrentPage(prev => prev + 1);
-									}}
-									className={
-										currentPage === totalPages
-											? 'pointer-events-none opacity-40'
-											: ''
-									}
-								/>
+									} }
+									className={currentPage === totalPages
+										? 'pointer-events-none opacity-40'
+										: ''} size={undefined}								/>
 							</PaginationItem>
 						</PaginationContent>
 					</Pagination>

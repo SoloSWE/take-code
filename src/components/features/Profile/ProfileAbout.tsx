@@ -4,10 +4,10 @@ import { useHover } from 'ahooks';
 import { Settings2 } from 'lucide-react';
 import { AzureEntraGlobalSecureAccess } from '@thesvg/react';
 
-import { cn } from '../../utils/cn';
-import { socialIconsMap } from '../../mocks/mockData';
+import { cn } from '../../../utils/cn';
+import { socialIconsMap } from '../../../mocks/mockData';
 
-import type { SocialMedia, UserProfile } from '../../pages/Profile';
+import type { SocialMedia, UserProfile } from '../../../pages/Profile';
 
 interface ProfileAboutProps {
 	userProfile: UserProfile | null;
